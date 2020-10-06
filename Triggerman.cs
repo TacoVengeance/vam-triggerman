@@ -57,6 +57,8 @@ namespace TacoVengeance
 
         bool wasLoading = true;
 
+        float CurrentTime => Time.timeSinceLevelLoad;
+
         public override void Init()
         {
             explanationString = new JSONStorableString("Orgasm percent: 0%", "");
@@ -134,11 +136,11 @@ namespace TacoVengeance
             }
 
             //we entered recently, plus are touching
-            if (Time.timeSinceLevelLoad - vagTouchLastTime < 1.0f && (labiaTouching || vagTouching || deepVagTouching))
+            if (CurrentTime - vagTouchLastTime < 1.0f && (labiaTouching || vagTouching || deepVagTouching))
             {
                 vagTouchTime += Time.deltaTime;
             }
-            else if (Time.timeSinceLevelLoad - foreplayTouchLastTime < 1.0f && (lBreastTouching || rBreastTouching || lipTouching))
+            else if (CurrentTime - foreplayTouchLastTime < 1.0f && (lBreastTouching || rBreastTouching || lipTouching))
             {
                 //foreplay goes half way
                 if (vagTouchTime < stimulationToOrgasm.val / 2.0f)
@@ -189,7 +191,7 @@ namespace TacoVengeance
         {
             vagTouchTime = - stimulationToOrgasm.val / 3.0f;
             orgasming = true;
-            orgasmStartTime = Time.timeSinceLevelLoad;
+            orgasmStartTime = CurrentTime;
             orgasmStep = 0;
 
             if (logMessages) SuperController.LogMessage("Start orgasm sequence");
@@ -201,7 +203,7 @@ namespace TacoVengeance
             float timeBetweenSteps = 0.5f;
             bool progressToNextStep = false;
 
-            if (Time.timeSinceLevelLoad - orgasmStartTime > timeBetweenSteps)
+            if (CurrentTime - orgasmStartTime > timeBetweenSteps)
             {
                 progressToNextStep = true;
             }
@@ -212,24 +214,24 @@ namespace TacoVengeance
                 if (UnityEngine.Random.value < 0.25f)
                 {
                     orgasmStep = lastOrgasmStep;
-                    orgasmStartTime = Time.timeSinceLevelLoad;
+                    orgasmStartTime = CurrentTime;
                 }
                 else
                 {
                     orgasmStep++;
-                    orgasmStartTime = Time.timeSinceLevelLoad;
+                    orgasmStartTime = CurrentTime;
                 }
             }
             else if (orgasmStep == 1 && progressToNextStep)
             {
                 orgasmStep++;
-                orgasmStartTime = Time.timeSinceLevelLoad;
+                orgasmStartTime = CurrentTime;
             }
             else if (orgasmStep == lastOrgasmStep && progressToNextStep) //MAKE SURE THIS IS ONE AFTER THE PRIOR STEP
             {
                 orgasming = false;
                 orgasmStep = 0;
-                vagTouchLastTime = Time.timeSinceLevelLoad;
+                vagTouchLastTime = CurrentTime;
             }
         }
 
@@ -241,7 +243,7 @@ namespace TacoVengeance
             {
                 if (!lipTouching && !orgasming)
                 {
-                    foreplayTouchLastTime = Time.timeSinceLevelLoad;
+                    foreplayTouchLastTime = CurrentTime;
                     lipTouching = true;
                 }
             }
@@ -325,7 +327,7 @@ namespace TacoVengeance
             {
                 if (!labiaTouching && !orgasming)
                 {
-                    vagTouchLastTime = Time.timeSinceLevelLoad;
+                    vagTouchLastTime = CurrentTime;
                     labiaTouching = true;
                 }
             }
@@ -341,7 +343,7 @@ namespace TacoVengeance
             {
                 if (!vagTouching && !orgasming)
                 {
-                    vagTouchLastTime = Time.timeSinceLevelLoad;
+                    vagTouchLastTime = CurrentTime;
                     vagTouching = true;
                 }
             }
@@ -357,7 +359,7 @@ namespace TacoVengeance
             {
                 if (!deepVagTouching && !orgasming)
                 {
-                    vagTouchLastTime = Time.timeSinceLevelLoad;
+                    vagTouchLastTime = CurrentTime;
                     deepVagTouching = true;
                 }
             }
