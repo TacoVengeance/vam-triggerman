@@ -29,7 +29,7 @@ namespace TacoVengeance
         JSONStorableFloat minArousalForOrgasm;
         //arousal time required for orgasm as percent
         JSONStorableFloat percentToOrgasmFloat;
-        JSONStorableString explanationString;
+        JSONStorableString statusString;
 
         Rigidbody lipTrigger;
         bool lipTouching = false;
@@ -64,8 +64,8 @@ namespace TacoVengeance
 
         public override void Init()
         {
-            explanationString = new JSONStorableString("Orgasm percent: 0%", "");
-            CreateTextField(explanationString).height = 50f;
+            statusString = new JSONStorableString("", "");
+            CreateTextField(statusString).height = 170f;
 
             minArousalForOrgasm = new JSONStorableFloat("Arousal time required for orgasm", 120.0f, 10.0f, 240.0f, false);
             RegisterFloat(minArousalForOrgasm);
@@ -128,6 +128,9 @@ namespace TacoVengeance
 
         public void Update()
         {
+            bool penetrating = labiaTouching || vagTouching || deepVagTouching;
+            bool foreplaying = lBreastTouching || rBreastTouching || lipTouching;
+
             if (SuperController.singleton.isLoading && !wasLoading)
             {
                 wasLoading = true;
@@ -138,15 +141,15 @@ namespace TacoVengeance
                 ResetTouching();
             }
 
-            //if penetrating and not still for more than a second
-            if (CurrentTime - timeLastPenetration < 1.0f && (labiaTouching || vagTouching || deepVagTouching))
+            //if penetrating and not still for more than a second (ie. hitting new colliders)
+            if (penetrating && (CurrentTime - timeLastPenetration < 1.0f))
             {
                 //arousal up
                 //NOTE: the more colliders you hit, the more arousal (ie. deeper = hotter)
                 arousalTime += Time.deltaTime;
             }
             //if foreplaying and not still for more than a second
-            else if (CurrentTime - timeLastForeplay < 1.0f && (lBreastTouching || rBreastTouching || lipTouching))
+            else if (foreplaying && (CurrentTime - timeLastForeplay < 1.0f))
             {
                 if (arousalTime < minArousalForOrgasm.val / 2.0f)
                 {
@@ -190,11 +193,15 @@ namespace TacoVengeance
             if (percentToOrgasm < 0) percentToOrgasm = 0;
             if (orgasming) percentToOrgasm = 1.0f;
 
-            explanationString.val = string.Format(
-                "Cumulative arousal time: {1:F02} sec" +
-                "\nOrgasm percent: {0:P}",
+            statusString.val = string.Format(
+                "Cumulative arousal time: {0:F02} sec\n" +
+                "Orgasm percent: {1:P}\n\n" +
+                "Foreplaying: {2}\n" +
+                "Penetrating: {3}",
+                arousalTime,
                 percentToOrgasm,
-                arousalTime
+                foreplaying,
+                penetrating
             );
 
             percentToOrgasmFloat.SetVal(percentToOrgasm);
