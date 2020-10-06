@@ -49,9 +49,6 @@ namespace TacoVengeance
         float foreplayTouchLastTime = 0;
 
         bool orgasming = false;
-        int orgasmStep = 0;
-        float orgasmStartTime = 0;
-        int lastOrgasmStep = 2;
         bool orgasmAgain = false;
         float percentToOrgasm = 0;
 
@@ -191,48 +188,14 @@ namespace TacoVengeance
         {
             vagTouchTime = - stimulationToOrgasm.val / 3.0f;
             orgasming = true;
-            orgasmStartTime = CurrentTime;
-            orgasmStep = 0;
 
             if (logMessages) SuperController.LogMessage("Start orgasm sequence");
         }
 
         void HandleOrgasm()
         {
-            //give it a little time to finish each step before moving on
-            float timeBetweenSteps = 0.5f;
-            bool progressToNextStep = false;
-
-            if (CurrentTime - orgasmStartTime > timeBetweenSteps)
-            {
-                progressToNextStep = true;
-            }
-
-            if (orgasmStep == 0 && progressToNextStep)
-            {
-                //if we choose a long orgasm clip, then just play it, and don't play the rest, 25% chance
-                if (UnityEngine.Random.value < 0.25f)
-                {
-                    orgasmStep = lastOrgasmStep;
-                    orgasmStartTime = CurrentTime;
-                }
-                else
-                {
-                    orgasmStep++;
-                    orgasmStartTime = CurrentTime;
-                }
-            }
-            else if (orgasmStep == 1 && progressToNextStep)
-            {
-                orgasmStep++;
-                orgasmStartTime = CurrentTime;
-            }
-            else if (orgasmStep == lastOrgasmStep && progressToNextStep) //MAKE SURE THIS IS ONE AFTER THE PRIOR STEP
-            {
-                orgasming = false;
-                orgasmStep = 0;
-                vagTouchLastTime = CurrentTime;
-            }
+            orgasming = false;
+            vagTouchLastTime = CurrentTime;
         }
 
         #region trigger callbacks
