@@ -17,16 +17,16 @@ namespace TacoVengeance
         readonly bool logMessages = false;
 
         //cumulative arousal time in seconds
-        float vagTouchTime = 0;
+        float arousalTime = 0;
         //cumulative arousal time in seconds as percent to orgasm
         float percentToOrgasm = 0;
         //time of last penetration
-        float vagTouchLastTime = 0;
+        float timeLastPenetration = 0;
         //time of last foreplay
-        float foreplayTouchLastTime = 0;
+        float timeLastForeplay = 0;
 
         //arousal time required for orgasm
-        JSONStorableFloat stimulationToOrgasm;
+        JSONStorableFloat minArousalForOrgasm;
         //arousal time required for orgasm as percent
         JSONStorableFloat percentToOrgasmFloat;
         JSONStorableString explanationString;
@@ -67,12 +67,12 @@ namespace TacoVengeance
             explanationString = new JSONStorableString("Orgasm percent: 0%", "");
             CreateTextField(explanationString).height = 50f;
 
-            stimulationToOrgasm = new JSONStorableFloat("Shortest possible touch time till orgasm", 120.0f, 10.0f, 240.0f, false);
-            RegisterFloat(stimulationToOrgasm);
-            stimulationToOrgasm.storeType = JSONStorableParam.StoreType.Full;
-            CreateSlider(stimulationToOrgasm);
+            minArousalForOrgasm = new JSONStorableFloat("Arousal time required for orgasm", 120.0f, 10.0f, 240.0f, false);
+            RegisterFloat(minArousalForOrgasm);
+            minArousalForOrgasm.storeType = JSONStorableParam.StoreType.Full;
+            CreateSlider(minArousalForOrgasm);
 
-            percentToOrgasmFloat = new JSONStorableFloat("Percent to orgasm float value", 0.0f, 0.0f, 1.0f, false);
+            percentToOrgasmFloat = new JSONStorableFloat("Percent to orgasm", 0.0f, 0.0f, 1.0f, false);
             RegisterFloat(percentToOrgasmFloat);
             percentToOrgasmFloat.storeType = JSONStorableParam.StoreType.Full;
         }
@@ -139,28 +139,28 @@ namespace TacoVengeance
             }
 
             //if penetrating and not still for more than a second
-            if (CurrentTime - vagTouchLastTime < 1.0f && (labiaTouching || vagTouching || deepVagTouching))
+            if (CurrentTime - timeLastPenetration < 1.0f && (labiaTouching || vagTouching || deepVagTouching))
             {
                 //arousal up
                 //NOTE: the more colliders you hit, the more arousal (ie. deeper = hotter)
-                vagTouchTime += Time.deltaTime;
+                arousalTime += Time.deltaTime;
             }
             //if foreplaying and not still for more than a second
-            else if (CurrentTime - foreplayTouchLastTime < 1.0f && (lBreastTouching || rBreastTouching || lipTouching))
+            else if (CurrentTime - timeLastForeplay < 1.0f && (lBreastTouching || rBreastTouching || lipTouching))
             {
-                if (vagTouchTime < stimulationToOrgasm.val / 2.0f)
+                if (arousalTime < minArousalForOrgasm.val / 2.0f)
                 {
                     //arousal up, but foreplay only counts up to 50%
-                    vagTouchTime += Time.deltaTime;
+                    arousalTime += Time.deltaTime;
                 }
             }
-            else if (vagTouchTime > 0)
+            else if (arousalTime > 0)
             {
                 //otherwise, arousal decays at 1/5 the rate it goes up
-                vagTouchTime -= Time.deltaTime / 5.0f;
+                arousalTime -= Time.deltaTime / 5.0f;
             }
 
-            if (vagTouchTime >= stimulationToOrgasm.val)
+            if (arousalTime >= minArousalForOrgasm.val)
             {
                 //ORGASM (arousal time is past orgasm o'clock)
 
@@ -186,7 +186,7 @@ namespace TacoVengeance
                 HandleOrgasm();
             }
 
-            percentToOrgasm = vagTouchTime / stimulationToOrgasm.val;
+            percentToOrgasm = arousalTime / minArousalForOrgasm.val;
             if (percentToOrgasm < 0) percentToOrgasm = 0;
             if (orgasming) percentToOrgasm = 1.0f;
 
@@ -194,7 +194,7 @@ namespace TacoVengeance
                 "Cumulative arousal time: {1:F02} sec" +
                 "\nOrgasm percent: {0:P}",
                 percentToOrgasm,
-                vagTouchTime
+                arousalTime
             );
 
             percentToOrgasmFloat.SetVal(percentToOrgasm);
@@ -204,7 +204,7 @@ namespace TacoVengeance
         {
             //set arousal to minus 33%; ie. you'll need 30% of min orgasm time to get the clock ticking again
 
-            vagTouchTime = - stimulationToOrgasm.val / 3.0f;
+            arousalTime = - minArousalForOrgasm.val / 3.0f;
             orgasming = true;
 
             LogMessage("Start orgasm");
@@ -213,7 +213,7 @@ namespace TacoVengeance
         void HandleOrgasm()
         {
             orgasming = false;
-            vagTouchLastTime = CurrentTime;
+            timeLastPenetration = CurrentTime;
 
             LogMessage("End orgasm");
         }
@@ -226,7 +226,7 @@ namespace TacoVengeance
             {
                 if (!lipTouching && !orgasming)
                 {
-                    foreplayTouchLastTime = CurrentTime;
+                    timeLastForeplay = CurrentTime;
                     lipTouching = true;
                 }
             }
@@ -278,7 +278,7 @@ namespace TacoVengeance
             {
                 if (!lBreastTouching && !throatTouching && !mouthTouching && !orgasming)
                 {
-                    foreplayTouchLastTime = CurrentTime;
+                    timeLastForeplay = CurrentTime;
                     lBreastTouching = true;
                 }
             }
@@ -294,7 +294,7 @@ namespace TacoVengeance
             {
                 if (!rBreastTouching && !throatTouching && !mouthTouching && !orgasming)
                 {
-                    foreplayTouchLastTime = CurrentTime;
+                    timeLastForeplay = CurrentTime;
                     rBreastTouching = true;
                 }
             }
@@ -310,7 +310,7 @@ namespace TacoVengeance
             {
                 if (!labiaTouching && !orgasming)
                 {
-                    vagTouchLastTime = CurrentTime;
+                    timeLastPenetration = CurrentTime;
                     labiaTouching = true;
                 }
             }
@@ -326,7 +326,7 @@ namespace TacoVengeance
             {
                 if (!vagTouching && !orgasming)
                 {
-                    vagTouchLastTime = CurrentTime;
+                    timeLastPenetration = CurrentTime;
                     vagTouching = true;
                 }
             }
@@ -342,7 +342,7 @@ namespace TacoVengeance
             {
                 if (!deepVagTouching && !orgasming)
                 {
-                    vagTouchLastTime = CurrentTime;
+                    timeLastPenetration = CurrentTime;
                     deepVagTouching = true;
                 }
             }
