@@ -16,9 +16,20 @@ namespace TacoVengeance
     {
         readonly bool logMessages = false;
 
-        JSONStorableString explanationString;
+        //cumulative arousal time in seconds
+        float vagTouchTime = 0;
+        //cumulative arousal time in seconds as percent to orgasm
+        float percentToOrgasm = 0;
+        //time of last penetration
+        float vagTouchLastTime = 0;
+        //time of last foreplay
+        float foreplayTouchLastTime = 0;
+
+        //arousal time required for orgasm
         JSONStorableFloat stimulationToOrgasm;
+        //arousal time required for orgasm as percent
         JSONStorableFloat percentToOrgasmFloat;
+        JSONStorableString explanationString;
 
         Rigidbody lipTrigger;
         bool lipTouching = false;
@@ -44,13 +55,8 @@ namespace TacoVengeance
         Rigidbody throatTrigger;
         bool throatTouching = false;
 
-        float vagTouchTime = 0;
-        float vagTouchLastTime = 0;
-        float foreplayTouchLastTime = 0;
-
         bool orgasming = false;
         bool orgasmAgain = false;
-        float percentToOrgasm = 0;
 
         bool wasLoading = true;
 
@@ -132,30 +138,35 @@ namespace TacoVengeance
                 ResetTouching();
             }
 
-            //we entered recently, plus are touching
+            //if penetrating and not still for more than a second
             if (CurrentTime - vagTouchLastTime < 1.0f && (labiaTouching || vagTouching || deepVagTouching))
             {
+                //arousal up
+                //NOTE: the more colliders you hit, the more arousal (ie. deeper = hotter)
                 vagTouchTime += Time.deltaTime;
             }
+            //if foreplaying and not still for more than a second
             else if (CurrentTime - foreplayTouchLastTime < 1.0f && (lBreastTouching || rBreastTouching || lipTouching))
             {
-                //foreplay goes half way
                 if (vagTouchTime < stimulationToOrgasm.val / 2.0f)
                 {
+                    //arousal up, but foreplay only counts up to 50%
                     vagTouchTime += Time.deltaTime;
                 }
             }
             else if (vagTouchTime > 0)
             {
+                //otherwise, arousal decays at 1/5 the rate it goes up
                 vagTouchTime -= Time.deltaTime / 5.0f;
             }
 
             if (vagTouchTime >= stimulationToOrgasm.val)
             {
-                //ORGASM
+                //ORGASM (arousal time is past orgasm o'clock)
+
                 if (orgasming)
                 {
-                    //as soon as we finish, start again
+                    //if we reached orgasm while orgasming (you absolute stud), begin orgasm again as soon as current one ends
                     orgasmAgain = true;
                 }
                 else
@@ -179,23 +190,32 @@ namespace TacoVengeance
             if (percentToOrgasm < 0) percentToOrgasm = 0;
             if (orgasming) percentToOrgasm = 1.0f;
 
-            explanationString.val = string.Format("Orgasm percent: {0:P}", percentToOrgasm);
+            explanationString.val = string.Format(
+                "Cumulative arousal time: {1:F02} sec" +
+                "\nOrgasm percent: {0:P}",
+                percentToOrgasm,
+                vagTouchTime
+            );
 
             percentToOrgasmFloat.SetVal(percentToOrgasm);
         }
 
         void StartOrgasm()
         {
+            //set arousal to minus 33%; ie. you'll need 30% of min orgasm time to get the clock ticking again
+
             vagTouchTime = - stimulationToOrgasm.val / 3.0f;
             orgasming = true;
 
-            if (logMessages) SuperController.LogMessage("Start orgasm sequence");
+            LogMessage("Start orgasm");
         }
 
         void HandleOrgasm()
         {
             orgasming = false;
             vagTouchLastTime = CurrentTime;
+
+            LogMessage("End orgasm");
         }
 
         #region trigger callbacks
@@ -333,6 +353,14 @@ namespace TacoVengeance
         }
 
         #endregion
+
+        void LogMessage(string message)
+        {
+            if (logMessages)
+            {
+                SuperController.LogMessage($"Triggerman: {message}");
+            }
+        }
     }
 
     #region VRAdultFun trigger helper
@@ -360,7 +388,8 @@ namespace TacoVengeance
 
         private void OnTriggerEnter(Collider other)
         {
-            //Don't collide with abdomen, or abdomen triggers vag collider when it shouldn't
+            //Don't collide with abdomen, or abdomen would trigger vag collider when it shouldn't
+            //FIXME: debug this - looks like there are other rigidbodies which cause bogus collisions
             if (other.attachedRigidbody.name.StartsWith("AutoColliderFemaleAutoCollidersabdomen"))
             {
                 return;
