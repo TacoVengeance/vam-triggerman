@@ -133,6 +133,9 @@ namespace TacoVengeance
 
         public void Update()
         {
+            bool penetrating = false;
+            bool foreplaying = false;
+
             if (SuperController.singleton.isLoading && !wasLoading)
             {
                 wasLoading = true;
@@ -143,19 +146,20 @@ namespace TacoVengeance
                 ResetTouching();
             }
 
-            bool penetrating = labiaTouching || vagTouching || deepVagTouching;
-            bool foreplaying = lBreastTouching || rBreastTouching || lipTouching;
-
             //if penetrating and not still for more than a second (ie. hitting new colliders)
-            if (penetrating && (CurrentTime - timeLastPenetration < 1.0f))
+            if ((labiaTouching || vagTouching || deepVagTouching) && (CurrentTime - timeLastPenetration < 1.0f))
             {
+                penetrating = true;
+
                 //arousal up
                 //NOTE: the more colliders you hit, the more arousal (ie. deeper = hotter)
                 arousalTime += Time.deltaTime;
             }
             //if foreplaying and not still for more than a second
-            else if (foreplaying && (CurrentTime - timeLastForeplay < 1.0f))
+            else if ((lBreastTouching || rBreastTouching || lipTouching) && (CurrentTime - timeLastForeplay < 1.0f))
             {
+                foreplaying = true;
+
                 if (arousalTime < minArousalForOrgasm.val / 2.0f)
                 {
                     //arousal up, but foreplay only counts up to 50%
