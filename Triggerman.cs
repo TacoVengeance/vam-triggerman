@@ -128,9 +128,6 @@ namespace TacoVengeance
 
         public void Update()
         {
-            bool penetrating = labiaTouching || vagTouching || deepVagTouching;
-            bool foreplaying = lBreastTouching || rBreastTouching || lipTouching;
-
             if (SuperController.singleton.isLoading && !wasLoading)
             {
                 wasLoading = true;
@@ -140,6 +137,9 @@ namespace TacoVengeance
                 wasLoading = false;
                 ResetTouching();
             }
+
+            bool penetrating = labiaTouching || vagTouching || deepVagTouching;
+            bool foreplaying = lBreastTouching || rBreastTouching || lipTouching;
 
             //if penetrating and not still for more than a second (ie. hitting new colliders)
             if (penetrating && (CurrentTime - timeLastPenetration < 1.0f))
