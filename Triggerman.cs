@@ -98,8 +98,7 @@ namespace TacoVengeance
             }
             else
             {
-                //FIXME: reference current class in this message
-                SuperController.LogError("Must be loaded on a female Person atom");
+                LogError("Must be loaded on a female Person atom");
             }
 
             ResetTouching();
@@ -379,6 +378,14 @@ namespace TacoVengeance
             if (logMessages)
             {
                 SuperController.LogMessage($"Triggerman: {message}");
+            }
+        }
+
+        void LogError(string message)
+        {
+            if (logMessages)
+            {
+                SuperController.LogError($"Triggerman: {message}");
             }
         }
     }
