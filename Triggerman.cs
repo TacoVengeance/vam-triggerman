@@ -18,17 +18,17 @@ namespace TacoVengeance
 
         //cumulative arousal time in seconds
         float arousalTime = 0;
-        //cumulative arousal time in seconds as percent to orgasm
+        //cumulative arousal time as percent to orgasm
         float percentToOrgasm = 0;
         //time of last penetration
         float timeLastPenetration = 0;
         //time of last foreplay
         float timeLastForeplay = 0;
-
         //arousal time required for orgasm
         JSONStorableFloat minArousalForOrgasm;
-        //arousal time required for orgasm as percent
+        //arousal time as percent to orgasm
         JSONStorableFloat percentToOrgasmFloat;
+
         JSONStorableString statusString;
 
         Rigidbody lipTrigger;
@@ -210,8 +210,8 @@ namespace TacoVengeance
         void StartOrgasm()
         {
             //set arousal to minus 33%; ie. you'll need 30% of min orgasm time to get the clock ticking again
-
             arousalTime = - minArousalForOrgasm.val / 3.0f;
+
             orgasming = true;
 
             LogMessage("Start orgasm");
