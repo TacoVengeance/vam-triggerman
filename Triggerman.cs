@@ -16,6 +16,12 @@ namespace TacoVengeance
     {
         readonly bool logMessages = false;
 
+        public delegate void OnArousalUpdateHandler(float percentToOrgasm);
+        public event OnArousalUpdateHandler OnArousalUpdate;
+
+        public delegate void OnOrgasmHandler();
+        public event OnOrgasmHandler OnOrgasm;
+
         //cumulative arousal time in seconds
         float arousalTime = 0;
         //cumulative arousal time as percent to orgasm
@@ -207,6 +213,11 @@ namespace TacoVengeance
             percentToOrgasmFloat.SetVal(percentToOrgasm);
         }
 
+        public void FixedUpdate()
+        {
+            OnArousalUpdate(percentToOrgasm);
+        }
+
         void StartOrgasm()
         {
             //set arousal to minus 33%; ie. you'll need 30% of min orgasm time to get the clock ticking again
@@ -221,6 +232,8 @@ namespace TacoVengeance
         {
             orgasming = false;
             timeLastPenetration = CurrentTime;
+
+            OnOrgasm();
 
             LogMessage("End orgasm");
         }
