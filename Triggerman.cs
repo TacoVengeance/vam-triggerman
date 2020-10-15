@@ -178,7 +178,7 @@ namespace TacoVengeance
 
                 if (orgasming)
                 {
-                    //if we reached orgasm while orgasming (you absolute stud), begin orgasm again as soon as current one ends
+                    //if orgasm reached while orgasming (you absolute stud), begin orgasm again as soon as current one ends
                     orgasmAgain = true;
                 }
                 else
@@ -223,7 +223,7 @@ namespace TacoVengeance
 
         void StartOrgasm()
         {
-            //set arousal to minus 33%; ie. you'll need 30% of min orgasm time to get the clock ticking again
+            //set arousal to -33%; ie. you'll need 1/3 of min orgasm time to get the clock ticking again
             arousalTime = - minArousalForOrgasm.val / 3.0f;
 
             orgasming = true;
