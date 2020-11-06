@@ -136,11 +136,11 @@ namespace TacoVengeance
             bool penetrating = false;
             bool foreplaying = false;
 
-            if (SuperController.singleton.isLoading && !wasLoading)
+            if (IsLoading && !wasLoading)
             {
                 wasLoading = true;
             }
-            else if (!SuperController.singleton.isLoading && wasLoading)
+            else if (!IsLoading && wasLoading)
             {
                 wasLoading = false;
                 ResetTouching();
@@ -245,7 +245,7 @@ namespace TacoVengeance
 
         void ObserveLipTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !SuperController.singleton.isLoading)
+            if (e.evtType == "Entered" && !IsLoading)
             {
                 if (!lipTouching && !orgasming)
                 {
@@ -261,7 +261,7 @@ namespace TacoVengeance
 
         void ObserveMouthTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !SuperController.singleton.isLoading)
+            if (e.evtType == "Entered" && !IsLoading)
             {
                 if (!mouthTouching && !orgasming)
                 {
@@ -279,7 +279,7 @@ namespace TacoVengeance
 
         void ObserveThroatTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !SuperController.singleton.isLoading)
+            if (e.evtType == "Entered" && !IsLoading)
             {
                 if (!throatTouching && !orgasming)
                 {
@@ -297,7 +297,7 @@ namespace TacoVengeance
 
         void ObservelBreastTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !SuperController.singleton.isLoading)
+            if (e.evtType == "Entered" && !IsLoading)
             {
                 if (!lBreastTouching && !throatTouching && !mouthTouching && !orgasming)
                 {
@@ -313,7 +313,7 @@ namespace TacoVengeance
 
         void ObserverBreastTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !SuperController.singleton.isLoading)
+            if (e.evtType == "Entered" && !IsLoading)
             {
                 if (!rBreastTouching && !throatTouching && !mouthTouching && !orgasming)
                 {
@@ -329,7 +329,7 @@ namespace TacoVengeance
 
         void ObserveLabiaTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !SuperController.singleton.isLoading)
+            if (e.evtType == "Entered" && !IsLoading)
             {
                 if (!labiaTouching && !orgasming)
                 {
@@ -345,7 +345,7 @@ namespace TacoVengeance
 
         void ObserveVagTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !SuperController.singleton.isLoading)
+            if (e.evtType == "Entered" && !IsLoading)
             {
                 if (!vagTouching && !orgasming)
                 {
@@ -361,7 +361,7 @@ namespace TacoVengeance
 
         void ObserveDeepVagTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !SuperController.singleton.isLoading)
+            if (e.evtType == "Entered" && !IsLoading)
             {
                 if (!deepVagTouching && !orgasming)
                 {
@@ -392,6 +392,8 @@ namespace TacoVengeance
                 SuperController.LogError($"Triggerman: {message}");
             }
         }
+
+        bool IsLoading => SuperController.singleton.isLoading;
     }
 
     #region VRAdultFun trigger helper
