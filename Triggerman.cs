@@ -245,7 +245,7 @@ namespace TacoVengeance
 
         void ObserveLipTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !IsLoading)
+            if (e.evtType == "Entered")
             {
                 if (!lipTouching && !orgasming)
                 {
@@ -261,7 +261,7 @@ namespace TacoVengeance
 
         void ObserveMouthTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !IsLoading)
+            if (e.evtType == "Entered")
             {
                 if (!mouthTouching && !orgasming)
                 {
@@ -279,7 +279,7 @@ namespace TacoVengeance
 
         void ObserveThroatTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !IsLoading)
+            if (e.evtType == "Entered")
             {
                 if (!throatTouching && !orgasming)
                 {
@@ -297,7 +297,7 @@ namespace TacoVengeance
 
         void ObservelBreastTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !IsLoading)
+            if (e.evtType == "Entered")
             {
                 if (!lBreastTouching && !throatTouching && !mouthTouching && !orgasming)
                 {
@@ -313,7 +313,7 @@ namespace TacoVengeance
 
         void ObserverBreastTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !IsLoading)
+            if (e.evtType == "Entered")
             {
                 if (!rBreastTouching && !throatTouching && !mouthTouching && !orgasming)
                 {
@@ -329,7 +329,7 @@ namespace TacoVengeance
 
         void ObserveLabiaTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !IsLoading)
+            if (e.evtType == "Entered")
             {
                 if (!labiaTouching && !orgasming)
                 {
@@ -345,7 +345,7 @@ namespace TacoVengeance
 
         void ObserveVagTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !IsLoading)
+            if (e.evtType == "Entered")
             {
                 if (!vagTouching && !orgasming)
                 {
@@ -361,7 +361,7 @@ namespace TacoVengeance
 
         void ObserveDeepVagTrigger(object sender, TriggerEventArgs e)
         {
-            if (e.evtType == "Entered" && !IsLoading)
+            if (e.evtType == "Entered")
             {
                 if (!deepVagTouching && !orgasming)
                 {
@@ -408,6 +408,7 @@ namespace TacoVengeance
     {
         TriggerEventArgs lastEvent;
 
+        bool ignoreIfLoading = true;
         public event EventHandler<TriggerEventArgs> OnCollide;
 
         void Awake()
@@ -427,6 +428,12 @@ namespace TacoVengeance
             {
                 return;
             }
+
+            if (ignoreIfLoading && SuperController.singleton.isLoading)
+            {
+                return;
+            }
+
             DoCollideEvent("Entered", other);
         }
 
