@@ -16,7 +16,7 @@ namespace TacoVengeance
     {
         readonly bool logMessages = false;
 
-        public delegate void OnArousalUpdateHandler(float percentToOrgasm);
+        public delegate void OnArousalUpdateHandler(float arousalRatio);
         public event OnArousalUpdateHandler OnArousalUpdate;
 
         public delegate void OnOrgasmHandler();
@@ -24,16 +24,16 @@ namespace TacoVengeance
 
         //cumulative arousal time in seconds
         float arousalTime = 0;
-        //cumulative arousal time as percent to orgasm
-        float percentToOrgasm = 0;
+        //cumulative arousal time as ratio to orgasm (0 to 1)
+        float arousalRatio = 0;
         //time of last penetration
         float timeLastPenetration = 0;
         //time of last foreplay
         float timeLastForeplay = 0;
         //arousal time required for orgasm
         JSONStorableFloat minArousalForOrgasm;
-        //arousal time as percent to orgasm
-        JSONStorableFloat percentToOrgasmFloat;
+        //arousal time as ratio to orgasm
+        JSONStorableFloat ratioToOrgasmFloat;
 
         JSONStorableString statusString;
 
@@ -78,9 +78,9 @@ namespace TacoVengeance
             minArousalForOrgasm.storeType = JSONStorableParam.StoreType.Full;
             CreateSlider(minArousalForOrgasm);
 
-            percentToOrgasmFloat = new JSONStorableFloat("Percent to orgasm", 0.0f, 0.0f, 1.0f, false);
-            RegisterFloat(percentToOrgasmFloat);
-            percentToOrgasmFloat.storeType = JSONStorableParam.StoreType.Full;
+            ratioToOrgasmFloat = new JSONStorableFloat("Ratio to orgasm", 0.0f, 0.0f, 1.0f, false);
+            RegisterFloat(ratioToOrgasmFloat);
+            ratioToOrgasmFloat.storeType = JSONStorableParam.StoreType.Full;
         }
 
         public void Start()
@@ -198,27 +198,27 @@ namespace TacoVengeance
                 HandleOrgasm();
             }
 
-            percentToOrgasm = arousalTime / minArousalForOrgasm.val;
-            if (percentToOrgasm < 0) percentToOrgasm = 0;
-            if (orgasming) percentToOrgasm = 1.0f;
+            arousalRatio = arousalTime / minArousalForOrgasm.val;
+            if (arousalRatio < 0) arousalRatio = 0;
+            if (orgasming) arousalRatio = 1.0f;
 
             statusString.val = string.Format(
                 "Cumulative arousal time: {0:F02} sec\n" +
-                "Orgasm percent: {1:P}\n\n" +
+                "Orgasm progress: {1:P}\n\n" +
                 "Foreplaying: {2}\n" +
                 "Penetrating: {3}",
                 arousalTime,
-                percentToOrgasm,
+                arousalRatio,
                 foreplaying,
                 penetrating
             );
 
-            percentToOrgasmFloat.SetVal(percentToOrgasm);
+            ratioToOrgasmFloat.SetVal(arousalRatio);
         }
 
         public void FixedUpdate()
         {
-            OnArousalUpdate(percentToOrgasm);
+            OnArousalUpdate(arousalRatio);
         }
 
         void StartOrgasm()
