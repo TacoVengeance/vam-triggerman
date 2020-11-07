@@ -23,8 +23,15 @@ namespace TacoVengeance
             IntegrateTo("MacGruber.Breathing", target => {
                 LogMessage("enabling MacGruber's Life integration");
 
-                triggerman.OnArousalUpdate += arousal => target.SetFloatParamValue("Intensity", arousal);
+                triggerman.OnArousalUpdate += arousal =>
+                {
+                    target.SetFloatParamValue("Intensity", Modulate(0.45f, 1f, arousal));
+                };
                 triggerman.OnOrgasm += () => target.CallAction("QueueOrgasm");
+
+                target.SetFloatParamValue("Rhythm Randomness", 0.02f);
+                target.SetFloatParamValue("Rhythm Damping", 0.05f);
+                target.SetFloatParamValue("Audio Variance", 1f);
             });
 
             IntegrateTo("EasyGaze", target => {
