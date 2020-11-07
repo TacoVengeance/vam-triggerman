@@ -35,6 +35,8 @@ namespace TacoVengeance
         //arousal time as ratio to orgasm
         JSONStorableFloat ratioToOrgasmFloat;
 
+        float timeLastUpdate = 0;
+
         JSONStorableString statusString;
 
         Rigidbody lipTrigger;
@@ -201,6 +203,7 @@ namespace TacoVengeance
             arousalRatio = arousalTime / minArousalForOrgasm.val;
             if (arousalRatio < 0) arousalRatio = 0;
             if (orgasming) arousalRatio = 1.0f;
+            ratioToOrgasmFloat.SetVal(arousalRatio);
 
             statusString.val = string.Format(
                 "Cumulative arousal time: {0:F02} sec\n" +
@@ -213,12 +216,13 @@ namespace TacoVengeance
                 penetrating
             );
 
-            ratioToOrgasmFloat.SetVal(arousalRatio);
-        }
+            //throttle updates for performance
+            if (CurrentTime - timeLastUpdate > 0.2f)
+            {
+                timeLastUpdate = CurrentTime;
 
-        public void FixedUpdate()
-        {
-            OnArousalUpdate(arousalRatio);
+                OnArousalUpdate(arousalRatio);
+            }
         }
 
         void StartOrgasm()
