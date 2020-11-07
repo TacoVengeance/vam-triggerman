@@ -20,59 +20,60 @@ namespace TacoVengeance
                 return;
             }
 
-            IntegrateTo("MacGruber.Breathing", target => {
+            IntegrateTo("MacGruber.Breathing", plugin => {
                 LogMessage("enabling MacGruber's Life integration");
 
                 triggerman.OnArousalUpdate += arousal =>
                 {
-                    target.SetFloatParamValue("Intensity", Modulate(0.45f, 1f, arousal));
+                    plugin.SetFloatParamValue("Intensity", Modulate(0.45f, 1f, arousal));
                 };
-                triggerman.OnOrgasm += () => target.CallAction("QueueOrgasm");
+                triggerman.OnOrgasm += () => plugin.CallAction("QueueOrgasm");
 
-                target.SetFloatParamValue("Rhythm Randomness", 0.02f);
-                target.SetFloatParamValue("Rhythm Damping", 0.05f);
-                target.SetFloatParamValue("Audio Variance", 1f);
+                plugin.SetFloatParamValue("Rhythm Randomness", 0.02f);
+                plugin.SetFloatParamValue("Rhythm Damping", 0.05f);
+                plugin.SetFloatParamValue("Audio Variance", 1f);
             });
 
-            IntegrateTo("EasyGaze", target => {
+            IntegrateTo("EasyGaze", plugin => {
                 LogMessage("enabling EasyGaze integration");
 
                 triggerman.OnArousalUpdate += arousal =>
                 {
-                    target.SetFloatParamValue("Random head roll timer Maximum",    Modulate(6f,  3f, arousal));
-                    target.SetFloatParamValue("Random roll Angle Maximum",         Modulate(2f, 25f, arousal));
-                    target.SetFloatParamValue("Random head turn range Vertical",   Modulate(2f, 25f, arousal));
-                    target.SetFloatParamValue("Random head turn range Horizontal", Modulate(2f, 25f, arousal));
+                    plugin.SetFloatParamValue("Random head roll timer Maximum",    Modulate(6f,  3f, arousal));
+                    plugin.SetFloatParamValue("Random roll Angle Maximum",         Modulate(2f, 25f, arousal));
+                    plugin.SetFloatParamValue("Random head turn range Vertical",   Modulate(2f, 25f, arousal));
+                    plugin.SetFloatParamValue("Random head turn range Horizontal", Modulate(2f, 25f, arousal));
                 };
             });
 
-            IntegrateTo("BreatheStandalone", target => {
+            IntegrateTo("BreatheStandalone", plugin => {
                 LogMessage("enabling BreatheStandalone integration");
 
                 triggerman.OnArousalUpdate += arousal =>
                 {
-                    target.SetFloatParamValue("Breath Intensity", Modulate(0.2f,  1f, arousal));
-                    target.SetFloatParamValue("Chest Movement",   Modulate( 15f, 30f, arousal));
+                    plugin.SetFloatParamValue("Breath Intensity", Modulate(0.2f,  1f, arousal));
+                    plugin.SetFloatParamValue("Chest Movement",   Modulate( 15f, 30f, arousal));
                 };
             });
 
-            IntegrateTo("VAMMoan", target => {
+            IntegrateTo("VAMMoan", plugin => {
                 LogMessage("enabling VamMoan integration");
+
+                //FIXME: doesn't work, goes straight to breathing
+                triggerman.OnOrgasm += () => plugin.CallAction("setVoiceOrgasm");
 
                 triggerman.OnArousalUpdate += arousal =>
                 {
-                    if      (arousal < 0.01f)  target.CallAction("setVoiceBreathing");
-                    else if (arousal < 0.10f)  target.CallAction("setVoiceIntensity0");
-                    else if (arousal < 0.20f)  target.CallAction("setVoiceIntensity1");
-                    else if (arousal < 0.35f)  target.CallAction("setVoiceIntensity2");
-                    else if (arousal < 0.65f)  target.CallAction("setVoiceIntensity3");
-                    else if (arousal < 0.85f)  target.CallAction("setVoiceIntensity4");
+                    if      (arousal < 0.01f)  plugin.CallAction("setVoiceBreathing");
+                    else if (arousal < 0.10f)  plugin.CallAction("setVoiceIntensity0");
+                    else if (arousal < 0.20f)  plugin.CallAction("setVoiceIntensity1");
+                    else if (arousal < 0.35f)  plugin.CallAction("setVoiceIntensity2");
+                    else if (arousal < 0.65f)  plugin.CallAction("setVoiceIntensity3");
+                    else if (arousal < 0.85f)  plugin.CallAction("setVoiceIntensity4");
 
-                    target.SetFloatParamValue("Kissing Speed", Modulate(1f, 0.25f, arousal));
-                    target.SetFloatParamValue("Blowjob Speed", Modulate(1f, 0.75f, arousal));
+                    plugin.SetFloatParamValue("Kissing Speed", Modulate(1f, 0.25f, arousal));
+                    plugin.SetFloatParamValue("Blowjob Speed", Modulate(1f, 0.75f, arousal));
                 };
-
-                triggerman.OnOrgasm += () => target.CallAction("setVoiceOrgasm");
             });
         }
 
@@ -86,9 +87,10 @@ namespace TacoVengeance
             }
         }
 
-        float Modulate(float startingValue, float finalValue, float arousal)
+        //returns a value between starting and final, based on arousal ratio
+        float Modulate(float startingValue, float finalValue, float arousalRatio)
         {
-            return (finalValue - startingValue) * arousal + startingValue;
+            return (finalValue - startingValue) * arousalRatio + startingValue;
         }
 
         JSONStorable SearchForLocalPluginBySuffix(string pluginNameSuffix)
