@@ -32,17 +32,10 @@ namespace TacoVengeance
 
                 triggerman.OnArousalUpdate += arousalPercent =>
                 {
-                    //6 - 3
-                    target.SetFloatParamValue("Random head roll timer Maximum", -(3f * arousalPercent) + 6f);
-
-                    //2 - 25
-                    target.SetFloatParamValue("Random roll Angle Maximum", (23f * arousalPercent) + 2f);
-
-                    //2 - 25
-                    target.SetFloatParamValue("Random head turn range Vertical", (23f * arousalPercent) + 2f);
-
-                    //2 - 25
-                    target.SetFloatParamValue("Random head turn range Horizontal", (23f * arousalPercent) + 2f);
+                    target.SetFloatParamValue("Random head roll timer Maximum",    Modulate(6f,  3f, arousalPercent));
+                    target.SetFloatParamValue("Random roll Angle Maximum",         Modulate(2f, 25f, arousalPercent));
+                    target.SetFloatParamValue("Random head turn range Vertical",   Modulate(2f, 25f, arousalPercent));
+                    target.SetFloatParamValue("Random head turn range Horizontal", Modulate(2f, 25f, arousalPercent));
                 };
             });
 
@@ -51,11 +44,8 @@ namespace TacoVengeance
 
                 triggerman.OnArousalUpdate += arousalPercent =>
                 {
-                    //0.2 - 1
-                    target.SetFloatParamValue("Breath Intensity", (.8f * arousalPercent) + .2f);
-
-                    //15 - 30
-                    target.SetFloatParamValue("Chest Movement", (15f * arousalPercent) + 15f);
+                    target.SetFloatParamValue("Breath Intensity", Modulate(0.2f,  1f, arousalPercent));
+                    target.SetFloatParamValue("Chest Movement",   Modulate( 15f, 30f, arousalPercent));
                 };
             });
 
@@ -71,11 +61,8 @@ namespace TacoVengeance
                     else if (arousalPercent < .65f)  target.CallAction("setVoiceIntensity3");
                     else if (arousalPercent < .85f)  target.CallAction("setVoiceIntensity4");
 
-                    //1 - 0.25
-                    target.SetFloatParamValue("Kissing Speed", -(0.75f * arousalPercent) + 1f);
-
-                    //1 - 0.75
-                    target.SetFloatParamValue("Blowjob Speed", -(0.25f * arousalPercent) + 1f);
+                    target.SetFloatParamValue("Kissing Speed", Modulate(1f, 0.25f, arousalPercent));
+                    target.SetFloatParamValue("Blowjob Speed", Modulate(1f, 0.75f, arousalPercent));
                 };
 
                 triggerman.OnOrgasm += () => target.CallAction("setVoiceOrgasm");
@@ -90,6 +77,11 @@ namespace TacoVengeance
             {
                 action(plugin);
             }
+        }
+
+        float Modulate(float startingValue, float finalValue, float arousalPercent)
+        {
+            return (finalValue - startingValue) * arousalPercent + startingValue;
         }
 
         JSONStorable SearchForLocalPluginBySuffix(string pluginNameSuffix)
