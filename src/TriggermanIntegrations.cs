@@ -58,6 +58,28 @@ namespace TacoVengeance
                     target.SetFloatParamValue("Chest Movement", (15f * arousalPercent) + 15f);
                 };
             });
+
+            IntegrateTo("VAMMoan", target => {
+                LogMessage("enabling VamMoan integration");
+
+                triggerman.OnArousalUpdate += arousalPercent =>
+                {
+                    if      (arousalPercent < 0.01f) target.CallAction("setVoiceBreathing");
+                    else if (arousalPercent < .1f)   target.CallAction("setVoiceIntensity0");
+                    else if (arousalPercent < .2f)   target.CallAction("setVoiceIntensity1");
+                    else if (arousalPercent < .35f)  target.CallAction("setVoiceIntensity2");
+                    else if (arousalPercent < .65f)  target.CallAction("setVoiceIntensity3");
+                    else if (arousalPercent < .85f)  target.CallAction("setVoiceIntensity4");
+
+                    //1 - 0.25
+                    target.SetFloatParamValue("Kissing Speed", -(0.75f * arousalPercent) + 1f);
+
+                    //1 - 0.75
+                    target.SetFloatParamValue("Blowjob Speed", -(0.25f * arousalPercent) + 1f);
+                };
+
+                triggerman.OnOrgasm += () => target.CallAction("setVoiceOrgasm");
+            });
         }
 
         void IntegrateTo(string pluginNameSuffix, ActionOnPlugin action)
