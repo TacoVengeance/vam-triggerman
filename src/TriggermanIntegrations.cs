@@ -81,7 +81,7 @@ namespace TacoVengeance
         {
             var plugin = SearchForLocalPluginBySuffix(pluginNameSuffix);
 
-            if (plugin)
+            if (plugin && plugin.enabled)
             {
                 action(plugin);
             }
