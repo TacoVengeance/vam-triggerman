@@ -16,11 +16,15 @@ namespace TacoVengeance
     {
         readonly bool logMessages = false;
 
-        public delegate void OnArousalUpdateHandler(float arousalRatio);
-        public event OnArousalUpdateHandler OnArousalUpdate;
+        public delegate void Handler(float arousalRatio);
+        public event Handler OnArousalUpdate;
 
-        public delegate void OnOrgasmHandler();
-        public event OnOrgasmHandler OnOrgasm;
+        public event Handler OnKissing;
+        public event Handler OnBlowjob;
+        public event Handler OnBreastTouch;
+        public event Handler OnPenetration;
+        public event Handler OnPump;
+        public event Handler OnOrgasm;
 
         //cumulative arousal time in seconds
         float arousalTime = 0;
@@ -240,7 +244,7 @@ namespace TacoVengeance
             orgasming = false;
             timeLastPenetration = CurrentTime;
 
-            OnOrgasm();
+            OnOrgasm(arousalRatio);
 
             LogMessage("End orgasm");
         }
@@ -255,6 +259,7 @@ namespace TacoVengeance
                 {
                     timeLastForeplay = CurrentTime;
                     lipTouching = true;
+                    OnKissing(arousalRatio);
                 }
             }
             else
@@ -270,6 +275,7 @@ namespace TacoVengeance
                 if (!mouthTouching && !orgasming)
                 {
                     mouthTouching = true;
+                    OnBlowjob(arousalRatio);
                 }
             }
             else
@@ -288,6 +294,7 @@ namespace TacoVengeance
                 if (!throatTouching && !orgasming)
                 {
                     throatTouching = true;
+                    OnBlowjob(arousalRatio);
                 }
             }
             else
@@ -307,6 +314,7 @@ namespace TacoVengeance
                 {
                     timeLastForeplay = CurrentTime;
                     lBreastTouching = true;
+                    OnBreastTouch(arousalRatio);
                 }
             }
             else
@@ -323,6 +331,7 @@ namespace TacoVengeance
                 {
                     timeLastForeplay = CurrentTime;
                     rBreastTouching = true;
+                    OnBreastTouch(arousalRatio);
                 }
             }
             else
@@ -355,6 +364,7 @@ namespace TacoVengeance
                 {
                     timeLastPenetration = CurrentTime;
                     vagTouching = true;
+                    OnPenetration(arousalRatio);
                 }
             }
             else
@@ -371,6 +381,7 @@ namespace TacoVengeance
                 {
                     timeLastPenetration = CurrentTime;
                     deepVagTouching = true;
+                    OnPump(arousalRatio);
                 }
             }
             else

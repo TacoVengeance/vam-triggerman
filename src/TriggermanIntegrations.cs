@@ -27,7 +27,7 @@ namespace TacoVengeance
                 {
                     plugin.SetFloatParamValue("Intensity", Modulate(0.45f, 1f, arousal));
                 };
-                triggerman.OnOrgasm += () => plugin.CallAction("QueueOrgasm");
+                triggerman.OnOrgasm += arousal => plugin.CallAction("QueueOrgasm");
 
                 plugin.SetFloatParamValue("Rhythm Randomness", 0.02f);
                 plugin.SetFloatParamValue("Rhythm Damping", 0.05f);
@@ -60,7 +60,7 @@ namespace TacoVengeance
                 LogMessage("enabling VamMoan integration");
 
                 //FIXME: doesn't work, goes straight to breathing
-                triggerman.OnOrgasm += () => plugin.CallAction("setVoiceOrgasm");
+                triggerman.OnOrgasm += arousal => plugin.CallAction("setVoiceOrgasm");
 
                 triggerman.OnArousalUpdate += arousal =>
                 {
