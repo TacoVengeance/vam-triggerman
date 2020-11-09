@@ -24,6 +24,10 @@ namespace TacoVengeance
             IntegrateTo("MacGruber.Breathing", plugin => {
                 LogMessage("enabling MacGruber's Life integration");
 
+                plugin.SetFloatParamValue("Rhythm Randomness", 0.02f);
+                plugin.SetFloatParamValue("Rhythm Damping", 0.05f);
+                plugin.SetFloatParamValue("Audio Variance", 1f);
+
                 triggerman.OnArousalUpdate += arousal =>
                 {
                     if   (arousal < 0.05f) plugin.SetFloatParamValue("Intensity", .25f);
@@ -31,10 +35,6 @@ namespace TacoVengeance
                 };
 
                 triggerman.OnOrgasm += arousal => plugin.CallAction("QueueOrgasm");
-
-                plugin.SetFloatParamValue("Rhythm Randomness", 0.02f);
-                plugin.SetFloatParamValue("Rhythm Damping", 0.05f);
-                plugin.SetFloatParamValue("Audio Variance", 1f);
             });
 
             IntegrateTo("EasyGaze", plugin => {
@@ -82,28 +82,28 @@ namespace TacoVengeance
             IntegrateTo("SexHelper", plugin => {
                 LogMessage("enabling SexHelper integration");
 
+                plugin.SetFloatParamValue("Thrust Time Range", .10f);
+
                 triggerman.OnArousalUpdate += arousal =>
                 {
                     plugin.SetFloatParamValue("Thrust Time (lower = faster)",   Modulate(.8f, .25f, arousal));
                     plugin.SetFloatParamValue("Position One (higher = deeper)", Modulate(.8f, .25f, arousal));
                 };
-
-                plugin.SetFloatParamValue("Thrust Time Range", .10f);
             });
 
             IntegrateTo("ExpressionRandomizer", plugin => {
                 LogMessage("enabling ExpressionRandomizer integration");
+
+                plugin.SetFloatParamValue("Morphing speed", 3f);
+                plugin.SetBoolParamValue("Trigger transitions manually", true);
+                plugin.SetBoolParamValue("Auto reset transitions if manual", true);
+                plugin.SetBoolParamValue("Play", true);
 
                 triggerman.OnArousalUpdate += arousal =>
                 {
                     plugin.SetFloatParamValue("Multiplier",   Modulate(0.8f, 1.5f,  arousal));
                     plugin.SetFloatParamValue("Master speed", Modulate(1f,   1.25f, arousal));
                 };
-
-                plugin.SetFloatParamValue("Morphing speed", 3f);
-                plugin.SetBoolParamValue("Trigger transitions manually", true);
-                plugin.SetBoolParamValue("Auto reset transitions if manual", true);
-                plugin.SetBoolParamValue("Play", true);
 
                 triggerman.OnPenetration += arousal => plugin.CallAction("Trigger transition");
                 triggerman.OnPump +=        arousal => plugin.CallAction("Trigger transition");
