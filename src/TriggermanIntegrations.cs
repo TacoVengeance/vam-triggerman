@@ -75,6 +75,18 @@ namespace TacoVengeance
                     plugin.SetFloatParamValue("Blowjob Speed", Modulate(1f, 0.75f, arousal));
                 };
             });
+
+            IntegrateTo("SexHelper", plugin => {
+                LogMessage("enabling SexHelper integration");
+
+                triggerman.OnArousalUpdate += arousal =>
+                {
+                    plugin.SetFloatParamValue("Thrust Time (lower = faster)",   Modulate(.8f, .25f, arousal));
+                    plugin.SetFloatParamValue("Position One (higher = deeper)", Modulate(.8f, .25f, arousal));
+                };
+
+                plugin.SetFloatParamValue("Thrust Time Range", .10f);
+            });
         }
 
         void IntegrateTo(string pluginNameSuffix, ActionOnPlugin action)
