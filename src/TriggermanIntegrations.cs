@@ -25,8 +25,10 @@ namespace TacoVengeance
 
                 triggerman.OnArousalUpdate += arousal =>
                 {
-                    plugin.SetFloatParamValue("Intensity", Modulate(0.45f, 1f, arousal));
+                    if   (arousal < 0.05f) plugin.SetFloatParamValue("Intensity", .25f);
+                    else                   plugin.SetFloatParamValue("Intensity", Modulate(0.45f, 1f, arousal));
                 };
+
                 triggerman.OnOrgasm += arousal => plugin.CallAction("QueueOrgasm");
 
                 plugin.SetFloatParamValue("Rhythm Randomness", 0.02f);
