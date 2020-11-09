@@ -28,19 +28,19 @@ namespace TacoVengeance
                 plugin.SetFloatParamValue("Rhythm Damping", 0.05f);
                 plugin.SetFloatParamValue("Audio Variance", 1f);
 
-                triggerman.OnArousalUpdate += arousal =>
+                triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
                     if   (arousal < 0.05f) plugin.SetFloatParamValue("Intensity", .25f);
                     else                   plugin.SetFloatParamValue("Intensity", Modulate(0.45f, 1f, arousal));
                 };
 
-                triggerman.OnOrgasm += arousal => plugin.CallAction("QueueOrgasm");
+                triggerman.OnOrgasmStart += () => plugin.CallAction("QueueOrgasm");
             });
 
             IntegrateTo("EasyGaze", plugin => {
                 LogMessage("enabling EasyGaze integration");
 
-                triggerman.OnArousalUpdate += arousal =>
+                triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
                     plugin.SetFloatParamValue("Random head roll timer Maximum",    Modulate(6f,  3f, arousal));
                     plugin.SetFloatParamValue("Random roll Angle Maximum",         Modulate(2f, 25f, arousal));
@@ -52,7 +52,7 @@ namespace TacoVengeance
             IntegrateTo("BreatheStandalone", plugin => {
                 LogMessage("enabling BreatheStandalone integration");
 
-                triggerman.OnArousalUpdate += arousal =>
+                triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
                     plugin.SetFloatParamValue("Breath Intensity", Modulate(0.2f,  1f, arousal));
                     plugin.SetFloatParamValue("Chest Movement",   Modulate( 15f, 30f, arousal));
@@ -62,21 +62,24 @@ namespace TacoVengeance
             IntegrateTo("VAMMoan", plugin => {
                 LogMessage("enabling VamMoan integration");
 
-                //FIXME: doesn't work, goes straight to breathing
-                triggerman.OnOrgasm += arousal => plugin.CallAction("setVoiceOrgasm");
-
-                triggerman.OnArousalUpdate += arousal =>
+                triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
+                    plugin.SetFloatParamValue("Kissing Speed", Modulate(1f, 0.25f, arousal));
+                    plugin.SetFloatParamValue("Blowjob Speed", Modulate(1f, 0.75f, arousal));
+
+                    if (sucking || kissing || orgasming) return;
+                    
                     if      (arousal < 0.01f)  plugin.CallAction("setVoiceBreathing");
                     else if (arousal < 0.10f)  plugin.CallAction("setVoiceIntensity0");
                     else if (arousal < 0.20f)  plugin.CallAction("setVoiceIntensity1");
                     else if (arousal < 0.35f)  plugin.CallAction("setVoiceIntensity2");
                     else if (arousal < 0.65f)  plugin.CallAction("setVoiceIntensity3");
                     else if (arousal < 0.85f)  plugin.CallAction("setVoiceIntensity4");
-
-                    plugin.SetFloatParamValue("Kissing Speed", Modulate(1f, 0.25f, arousal));
-                    plugin.SetFloatParamValue("Blowjob Speed", Modulate(1f, 0.75f, arousal));
                 };
+
+                triggerman.OnSuckingStart += () => plugin.CallAction("setVoiceBlowjob");
+                triggerman.OnKissingStart += () => plugin.CallAction("setVoiceKissing");
+                triggerman.OnOrgasmStart += ()  => plugin.CallAction("setVoiceOrgasm");
             });
 
             IntegrateTo("SexHelper", plugin => {
@@ -84,10 +87,11 @@ namespace TacoVengeance
 
                 plugin.SetFloatParamValue("Thrust Time Range", .10f);
 
-                triggerman.OnArousalUpdate += arousal =>
+                triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
                     plugin.SetFloatParamValue("Thrust Time (lower = faster)",   Modulate(.8f, .25f, arousal));
                     plugin.SetFloatParamValue("Position One (higher = deeper)", Modulate(.8f, .25f, arousal));
+                    plugin.SetFloatParamValue("Hip Position One",               Modulate(.8f, .25f, arousal));
                 };
             });
 
@@ -99,29 +103,16 @@ namespace TacoVengeance
                 plugin.SetBoolParamValue("Auto reset transitions if manual", true);
                 plugin.SetBoolParamValue("Play", true);
 
-                triggerman.OnArousalUpdate += arousal =>
+                triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
                     plugin.SetFloatParamValue("Multiplier",   Modulate(0.8f, 1.5f,  arousal));
                     plugin.SetFloatParamValue("Master speed", Modulate(1f,   1.25f, arousal));
                 };
 
-                triggerman.OnPenetration += arousal => plugin.CallAction("Trigger transition");
-                triggerman.OnPump +=        arousal => plugin.CallAction("Trigger transition");
-                triggerman.OnBreastTouch += arousal => plugin.CallAction("Trigger transition");
-                triggerman.OnOrgasm +=      arousal => plugin.CallAction("Trigger transition");
-            });
-
-            IntegrateTo("MoanBot", plugin => {
-                LogMessage("enabling MoanBot integration");
-
-                triggerman.OnKissing     += arousal => plugin.CallAction("Kiss");
-                triggerman.OnBlowjob     += arousal => plugin.CallAction("Blowjob");
-                triggerman.OnBreastTouch += arousal => plugin.CallAction("BreastTouch");
-                triggerman.OnPenetration += arousal => plugin.CallAction("Penetration");
-                triggerman.OnPump        += arousal => plugin.CallAction("Pump");
-                triggerman.OnOrgasm      += arousal => plugin.CallAction("Orgasm");
-
-                triggerman.OnArousalUpdate += arousal => plugin.SetFloatParamValue("Arousal", arousal);
+                triggerman.OnPenetration += () => plugin.CallAction("Trigger transition");
+                triggerman.OnPump +=        () => plugin.CallAction("Trigger transition");
+                triggerman.OnBreastTouch += () => plugin.CallAction("Trigger transition");
+                triggerman.OnOrgasmStart += () => plugin.CallAction("Trigger transition");
             });
         }
 

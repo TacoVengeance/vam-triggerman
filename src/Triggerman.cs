@@ -16,16 +16,33 @@ namespace TacoVengeance
     {
         readonly bool logMessages = false;
 
-        public delegate void Handler(float arousalRatio);
+        public delegate void SimpleHandler();
+        public delegate void Handler(float arousalRatio, bool kissing, bool sucking, bool orgasming);
+
         public event Handler OnArousalUpdate;
 
-        public event Handler OnKissing;
-        public event Handler OnBlowjob;
+        public event SimpleHandler OnKissingStart;
+        public event SimpleHandler OnKissingStop;
+        bool kissing = false;
 
-        public event Handler OnBreastTouch;
-        public event Handler OnPenetration;
-        public event Handler OnPump;
-        public event Handler OnOrgasm;
+        public event SimpleHandler OnSuckingStart;
+        public event SimpleHandler OnSuckingStop;
+        bool sucking = false;
+
+        public event SimpleHandler OnOrgasmStart;
+        public event SimpleHandler OnOrgasmStop;
+        bool orgasming = false;
+
+        public event SimpleHandler OnBreastTouch;
+        bool breastsTouching = false;
+
+        public event SimpleHandler OnPenetration;
+        bool penetrating = false;
+
+        public event SimpleHandler OnPump;
+        bool pumping = false;
+
+        bool foreplaying = false;
 
         //cumulative arousal time in seconds
         float arousalTime = 0;
@@ -35,12 +52,17 @@ namespace TacoVengeance
         float timeLastPenetration = 0;
         //time of last foreplay
         float timeLastForeplay = 0;
+        //time of last orgasm start
+        float timeOrgasmStart = 0;
+        //time in millisecs that the current orgasm will last
+        float orgasmDuration = 0;
         //arousal time required for orgasm
         JSONStorableFloat minArousalForOrgasm;
         //arousal time as ratio to orgasm
         JSONStorableFloat ratioToOrgasmFloat;
 
         float timeLastUpdate = 0;
+        bool wasLoading = true;
 
         JSONStorableString statusString;
 
@@ -68,11 +90,6 @@ namespace TacoVengeance
         Rigidbody throatTrigger;
         bool throatTouching = false;
 
-        bool orgasming = false;
-        bool orgasmAgain = false;
-
-        bool wasLoading = true;
-
         float CurrentTime => Time.timeSinceLevelLoad;
 
         public override void Init()
@@ -80,7 +97,7 @@ namespace TacoVengeance
             statusString = new JSONStorableString("", "");
             CreateTextField(statusString).height = 170f;
 
-            minArousalForOrgasm = new JSONStorableFloat("Arousal time required for orgasm", 120.0f, 10.0f, 240.0f, false);
+            minArousalForOrgasm = new JSONStorableFloat("Arousal time required for orgasm", 45f, 10f, 300f, false);
             RegisterFloat(minArousalForOrgasm);
             minArousalForOrgasm.storeType = JSONStorableParam.StoreType.Full;
             CreateSlider(minArousalForOrgasm);
@@ -140,9 +157,6 @@ namespace TacoVengeance
 
         public void Update()
         {
-            bool penetrating = false;
-            bool foreplaying = false;
-
             if (IsLoading && !wasLoading)
             {
                 wasLoading = true;
@@ -153,20 +167,23 @@ namespace TacoVengeance
                 ResetTouching();
             }
 
-            //if penetrating and not still for more than a second (ie. hitting new colliders)
-            if ((labiaTouching || vagTouching || deepVagTouching) && (CurrentTime - timeLastPenetration < 1.0f))
-            {
-                penetrating = true;
+            kissing = lipTouching;
+            sucking = mouthTouching || throatTouching;
+            breastsTouching = lBreastTouching || rBreastTouching;
+            penetrating = labiaTouching || vagTouching || deepVagTouching;
+            foreplaying = lBreastTouching || rBreastTouching || lipTouching;
+            pumping = deepVagTouching;
 
+            //if penetrating and not still for more than a second (ie. hitting new colliders)
+            if (penetrating && (CurrentTime - timeLastPenetration < 1.0f))
+            {
                 //arousal up
                 //NOTE: the more colliders you hit, the more arousal (ie. deeper = hotter)
                 arousalTime += Time.deltaTime;
             }
             //if foreplaying and not still for more than a second
-            else if ((lBreastTouching || rBreastTouching || lipTouching) && (CurrentTime - timeLastForeplay < 1.0f))
+            else if (foreplaying && (CurrentTime - timeLastForeplay < 1.0f))
             {
-                foreplaying = true;
-
                 if (arousalTime < minArousalForOrgasm.val / 2.0f)
                 {
                     //arousal up, but foreplay only counts up to 50%
@@ -182,21 +199,6 @@ namespace TacoVengeance
             if (arousalTime >= minArousalForOrgasm.val)
             {
                 //ORGASM (arousal time is past orgasm o'clock)
-
-                if (orgasming)
-                {
-                    //if orgasm reached while orgasming (you absolute stud), begin orgasm again as soon as current one ends
-                    orgasmAgain = true;
-                }
-                else
-                {
-                    StartOrgasm();
-                }
-            }
-
-            if (orgasmAgain && !orgasming)
-            {
-                orgasmAgain = false;
                 StartOrgasm();
             }
 
@@ -207,7 +209,6 @@ namespace TacoVengeance
 
             arousalRatio = arousalTime / minArousalForOrgasm.val;
             if (arousalRatio < 0) arousalRatio = 0;
-            if (orgasming) arousalRatio = 1.0f;
             ratioToOrgasmFloat.SetVal(arousalRatio);
 
             statusString.val = string.Format(
@@ -226,28 +227,31 @@ namespace TacoVengeance
             {
                 timeLastUpdate = CurrentTime;
 
-                OnArousalUpdate(arousalRatio);
+                OnArousalUpdate(arousalRatio, kissing, sucking, orgasming);
             }
         }
 
         void StartOrgasm()
         {
-            //set arousal to -33%; ie. you'll need 1/3 of min orgasm time to get the clock ticking again
-            arousalTime = - minArousalForOrgasm.val / 3.0f;
-
+            arousalTime = 0f;
             orgasming = true;
 
-            LogMessage("Start orgasm");
+            //orgasms last between 5 and 12secs
+            orgasmDuration = UnityEngine.Random.Range(5f, 12f);
+            timeOrgasmStart = CurrentTime;
+
+            LogMessage(string.Format("Start orgasm of {0:F02} sec", orgasmDuration));
+            OnOrgasmStart();
         }
 
         void HandleOrgasm()
         {
-            orgasming = false;
-            timeLastPenetration = CurrentTime;
-
-            OnOrgasm(arousalRatio);
-
-            LogMessage("End orgasm");
+            if (CurrentTime - timeOrgasmStart >= orgasmDuration)
+            {
+                LogMessage("End orgasm");
+                orgasming = false;
+                OnOrgasmStop();
+            }
         }
 
         #region trigger callbacks
@@ -256,16 +260,17 @@ namespace TacoVengeance
         {
             if (e.evtType == "Entered")
             {
-                if (!lipTouching && !orgasming)
+                if (!kissing && !orgasming)
                 {
                     timeLastForeplay = CurrentTime;
                     lipTouching = true;
-                    OnKissing(arousalRatio);
+                    OnKissingStart();
                 }
             }
             else
             {
                 lipTouching = false;
+                OnKissingStop();
             }
         }
 
@@ -276,7 +281,7 @@ namespace TacoVengeance
                 if (!mouthTouching && !orgasming)
                 {
                     mouthTouching = true;
-                    OnBlowjob(arousalRatio);
+                    OnSuckingStart();
                 }
             }
             else
@@ -284,6 +289,7 @@ namespace TacoVengeance
                 if (mouthTouching)
                 {
                     mouthTouching = false;
+                    OnSuckingStop();
                 }
             }
         }
@@ -295,7 +301,7 @@ namespace TacoVengeance
                 if (!throatTouching && !orgasming)
                 {
                     throatTouching = true;
-                    OnBlowjob(arousalRatio);
+                    OnSuckingStart();
                 }
             }
             else
@@ -303,6 +309,7 @@ namespace TacoVengeance
                 if (throatTouching)
                 {
                     throatTouching = false;
+                    OnSuckingStop();
                 }
             }
         }
@@ -315,7 +322,7 @@ namespace TacoVengeance
                 {
                     timeLastForeplay = CurrentTime;
                     lBreastTouching = true;
-                    OnBreastTouch(arousalRatio);
+                    OnBreastTouch();
                 }
             }
             else
@@ -332,7 +339,7 @@ namespace TacoVengeance
                 {
                     timeLastForeplay = CurrentTime;
                     rBreastTouching = true;
-                    OnBreastTouch(arousalRatio);
+                    OnBreastTouch();
                 }
             }
             else
@@ -365,7 +372,7 @@ namespace TacoVengeance
                 {
                     timeLastPenetration = CurrentTime;
                     vagTouching = true;
-                    OnPenetration(arousalRatio);
+                    OnPenetration();
                 }
             }
             else
@@ -382,7 +389,7 @@ namespace TacoVengeance
                 {
                     timeLastPenetration = CurrentTime;
                     deepVagTouching = true;
-                    OnPump(arousalRatio);
+                    OnPump();
                 }
             }
             else
