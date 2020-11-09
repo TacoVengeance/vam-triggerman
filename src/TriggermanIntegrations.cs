@@ -91,6 +91,26 @@ namespace TacoVengeance
                 plugin.SetFloatParamValue("Thrust Time Range", .10f);
             });
 
+            IntegrateTo("ExpressionRandomizer", plugin => {
+                LogMessage("enabling ExpressionRandomizer integration");
+
+                triggerman.OnArousalUpdate += arousal =>
+                {
+                    plugin.SetFloatParamValue("Multiplier",   Modulate(0.8f, 1.5f,  arousal));
+                    plugin.SetFloatParamValue("Master speed", Modulate(1f,   1.25f, arousal));
+                };
+
+                plugin.SetFloatParamValue("Morphing speed", 3f);
+                plugin.SetBoolParamValue("Trigger transitions manually", true);
+                plugin.SetBoolParamValue("Auto reset transitions if manual", true);
+                plugin.SetBoolParamValue("Play", true);
+
+                triggerman.OnPenetration += arousal => plugin.CallAction("Trigger transition");
+                triggerman.OnPump +=        arousal => plugin.CallAction("Trigger transition");
+                triggerman.OnBreastTouch += arousal => plugin.CallAction("Trigger transition");
+                triggerman.OnOrgasm +=      arousal => plugin.CallAction("Trigger transition");
+            });
+
             IntegrateTo("MoanBot", plugin => {
                 LogMessage("enabling MoanBot integration");
 
