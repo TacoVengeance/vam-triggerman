@@ -89,6 +89,19 @@ namespace TacoVengeance
 
                 plugin.SetFloatParamValue("Thrust Time Range", .10f);
             });
+
+            IntegrateTo("MoanBot", plugin => {
+                LogMessage("enabling MoanBot integration");
+
+                triggerman.OnKissing     += arousal => plugin.CallAction("Kiss");
+                triggerman.OnBlowjob     += arousal => plugin.CallAction("Blowjob");
+                triggerman.OnBreastTouch += arousal => plugin.CallAction("BreastTouch");
+                triggerman.OnPenetration += arousal => plugin.CallAction("Penetration");
+                triggerman.OnPump        += arousal => plugin.CallAction("Pump");
+                triggerman.OnOrgasm      += arousal => plugin.CallAction("Orgasm");
+
+                triggerman.OnArousalUpdate += arousal => plugin.SetFloatParamValue("Arousal", arousal);
+            });
         }
 
         void IntegrateTo(string pluginNameSuffix, ActionOnPlugin action)
