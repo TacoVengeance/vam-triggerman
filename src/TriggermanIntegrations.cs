@@ -17,6 +17,7 @@ namespace TacoVengeance
             var triggerman = SearchForLocalPluginBySuffix("TriggermanPlugin") as TriggermanPlugin;
             if (triggerman == null)
             {
+                LogError("Triggerman plugin not found on this atom; disabling");
                 return;
             }
 
@@ -147,7 +148,7 @@ namespace TacoVengeance
         {
             if (logMessages)
             {
-                SuperController.LogError($"Triggerman: {message}");
+                SuperController.LogError($"Triggerman - ERROR: {message}");
             }
         }
 

@@ -21,6 +21,7 @@ namespace TacoVengeance
 
         public event Handler OnKissing;
         public event Handler OnBlowjob;
+
         public event Handler OnBreastTouch;
         public event Handler OnPenetration;
         public event Handler OnPump;
@@ -404,7 +405,7 @@ namespace TacoVengeance
         {
             if (logMessages)
             {
-                SuperController.LogError($"Triggerman: {message}");
+                SuperController.LogError($"Triggerman - ERROR: {message}");
             }
         }
 
