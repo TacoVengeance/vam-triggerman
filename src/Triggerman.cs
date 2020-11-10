@@ -178,7 +178,6 @@ namespace TacoVengeance
             if (penetrating && (CurrentTime - timeLastPenetration < 1.0f))
             {
                 //arousal up
-                //NOTE: the more colliders you hit, the more arousal (ie. deeper = hotter)
                 arousalTime += Time.deltaTime;
             }
             //if foreplaying and not still for more than a second

@@ -22,8 +22,7 @@ namespace TacoVengeance
             }
 
             IntegrateTo("MacGruber.Breathing", plugin => {
-                LogMessage("enabling MacGruber's Life integration");
-
+                //make breaths less sparse
                 plugin.SetFloatParamValue("Rhythm Randomness", 0.02f);
                 plugin.SetFloatParamValue("Rhythm Damping", 0.05f);
                 plugin.SetFloatParamValue("Audio Variance", 1f);
@@ -38,10 +37,9 @@ namespace TacoVengeance
             });
 
             IntegrateTo("EasyGaze", plugin => {
-                LogMessage("enabling EasyGaze integration");
-
                 triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
+                    //increasing random head movement
                     plugin.SetFloatParamValue("Random head roll timer Maximum",    Modulate(6f,  3f, arousal));
                     plugin.SetFloatParamValue("Random roll Angle Maximum",         Modulate(2f, 25f, arousal));
                     plugin.SetFloatParamValue("Random head turn range Vertical",   Modulate(2f, 25f, arousal));
@@ -50,8 +48,6 @@ namespace TacoVengeance
             });
 
             IntegrateTo("BreatheStandalone", plugin => {
-                LogMessage("enabling BreatheStandalone integration");
-
                 triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
                     plugin.SetFloatParamValue("Breath Intensity", Modulate(0.2f,  1f, arousal));
@@ -60,13 +56,13 @@ namespace TacoVengeance
             });
 
             IntegrateTo("VAMMoan", plugin => {
-                LogMessage("enabling VamMoan integration");
-
                 triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
+                    //NOTE: these are more "delay" than speed", thus here they are decreased with arousal
                     plugin.SetFloatParamValue("Kissing Speed", Modulate(1f, 0.25f, arousal));
                     plugin.SetFloatParamValue("Blowjob Speed", Modulate(1f, 0.75f, arousal));
 
+                    //these take precedence over regular moaning, so while they take place, don't do anything here
                     if (sucking || kissing || orgasming) return;
                     
                     if      (arousal < 0.01f)  plugin.CallAction("setVoiceBreathing");
@@ -83,21 +79,18 @@ namespace TacoVengeance
             });
 
             IntegrateTo("SexHelper", plugin => {
-                LogMessage("enabling SexHelper integration");
-
                 plugin.SetFloatParamValue("Thrust Time Range", .10f);
 
                 triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
-                    plugin.SetFloatParamValue("Thrust Time (lower = faster)",   Modulate(.8f, .25f, arousal));
-                    plugin.SetFloatParamValue("Position One (higher = deeper)", Modulate(.8f, .25f, arousal));
-                    plugin.SetFloatParamValue("Hip Position One",               Modulate(.8f, .25f, arousal));
+                    //slow, long movement at first; shorter and faster with arousal
+                    plugin.SetFloatParamValue("Thrust Time (lower = faster)",   Modulate(.80f, .25f, arousal));
+                    plugin.SetFloatParamValue("Position One (higher = deeper)", Modulate(.80f, .25f, arousal));
+                    plugin.SetFloatParamValue("Hip Position One",               Modulate(.80f, .25f, arousal));
                 };
             });
 
             IntegrateTo("ExpressionRandomizer", plugin => {
-                LogMessage("enabling ExpressionRandomizer integration");
-
                 plugin.SetFloatParamValue("Morphing speed", 3f);
                 plugin.SetBoolParamValue("Trigger transitions manually", true);
                 plugin.SetBoolParamValue("Auto reset transitions if manual", true);
@@ -105,6 +98,7 @@ namespace TacoVengeance
 
                 triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
+                    //faster, more intense gestures with arousal
                     plugin.SetFloatParamValue("Multiplier",   Modulate(0.8f, 1.5f,  arousal));
                     plugin.SetFloatParamValue("Master speed", Modulate(1f,   1.25f, arousal));
                 };
@@ -116,6 +110,7 @@ namespace TacoVengeance
             });
         }
 
+        //if the containing atom also has an enabled plugin with this suffix, then do stuff with it
         void IntegrateTo(string pluginNameSuffix, ActionOnPlugin action)
         {
             var plugin = SearchForLocalPluginBySuffix(pluginNameSuffix);
@@ -126,24 +121,29 @@ namespace TacoVengeance
             }
         }
 
-        //returns a value between starting and final, based on arousal ratio
-        float Modulate(float startingValue, float finalValue, float arousalRatio)
-        {
-            return (finalValue - startingValue) * arousalRatio + startingValue;
-        }
-
         JSONStorable SearchForLocalPluginBySuffix(string pluginNameSuffix)
         {
             foreach (var sid in containingAtom.GetStorableIDs().Where(id => id.StartsWith("plugin#")))
             {
                 if (sid.EndsWith(pluginNameSuffix))
                 {
+                    LogMessage("integrating to " + pluginNameSuffix);
                     return containingAtom.GetStorableByID(sid);
                 }
             }
 
             return null;
         }
+
+        #region helpers
+
+        //returns a value between starting and final, based on arousal ratio
+        float Modulate(float startingValue, float finalValue, float arousalRatio)
+        {
+            return (finalValue - startingValue) * arousalRatio + startingValue;
+        }
+
+        #endregion
 
         #region logging
 
