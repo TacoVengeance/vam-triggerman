@@ -108,6 +108,28 @@ namespace TacoVengeance
                 triggerman.OnBreastTouch += () => plugin.CallAction("Trigger transition");
                 triggerman.OnOrgasmStart += () => plugin.CallAction("Trigger transition");
             });
+
+            IntegrateTo("SoundRandomizer", plugin => {
+                plugin.SetBoolParamValue("Only play when clear", true);
+
+                triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
+                {
+                    if      (kissing)          ConfigureSoundRandomizer(plugin, "kissing");
+                    else if (sucking)          ConfigureSoundRandomizer(plugin, "sucking");
+                    else if (orgasming)        ConfigureSoundRandomizer(plugin, "orgasming");
+                    else if (arousal < 0.10f)  ConfigureSoundRandomizer(plugin, "level0");
+                    else if (arousal < 0.25f)  ConfigureSoundRandomizer(plugin, "level1");
+                    else if (arousal < 0.50f)  ConfigureSoundRandomizer(plugin, "level2");
+                    else if (arousal < 0.75f)  ConfigureSoundRandomizer(plugin, "level3");
+                    else                       ConfigureSoundRandomizer(plugin, "level4");
+                };
+
+                triggerman.OnPenetration += () => plugin.CallAction("PlayRandomSound");
+                triggerman.OnSuckingStart +=() => plugin.CallAction("PlayRandomSound");
+                triggerman.OnPump +=        () => plugin.CallAction("PlayRandomSound");
+                triggerman.OnBreastTouch += () => plugin.CallAction("PlayRandomSound");
+                triggerman.OnOrgasmStart += () => plugin.CallAction("PlayRandomSound");
+            });
         }
 
         //if the containing atom also has an enabled plugin with this suffix, then do stuff with it
@@ -141,6 +163,51 @@ namespace TacoVengeance
         float Modulate(float startingValue, float finalValue, float arousalRatio)
         {
             return (finalValue - startingValue) * arousalRatio + startingValue;
+        }
+
+        void ConfigureSoundRandomizer(JSONStorable plugin, string state)
+        {
+            switch (state)
+            {
+                case "kissing":
+                case "sucking":
+                    plugin.SetStringParamValue("selected", SoundList("licking", "kiss", "makeout", "suckinglicking", "cunnilingus"));
+                    break;
+                case "orgasming":
+                    plugin.SetStringParamValue("selected", SoundList("woman-orgasm-1", "Late-20s-Woman-Exaggerated", "FemOrgasmSex"));
+                    break;
+                case "level0":
+                    plugin.SetStringParamValue("selected", SoundRange("FemPixieW", 1034, 1039));
+                    break;
+                case "level1":
+                    plugin.SetStringParamValue("selected", SoundNumberList("FemPixieW", 1066, 1071, 1074, 1076));
+                    break;
+                case "level2":
+                    plugin.SetStringParamValue("selected", SoundRange("FemPixieW", 1080, 1086));
+                    break;
+                case "level3":
+                    plugin.SetStringParamValue("selected", SoundRange("FemPixieW", 1088, 1098));
+                    break;
+                case "level4":
+                    break;
+                default:
+                    throw new Exception($"Unknown state {state}");
+            }
+        }
+
+        string SoundRange(string prefix, int start, int end)
+        {
+            return SoundNumberList(prefix, Enumerable.Range(start, end - start + 1).ToArray());
+        }
+
+        string SoundNumberList(string prefix, params int[] numbers)
+        {
+            return SoundList(numbers.Select(n => prefix + n.ToString()).ToArray());
+        }
+
+        string SoundList(params string[] sounds)
+        {
+            return string.Join("|", sounds);
         }
 
         #endregion
