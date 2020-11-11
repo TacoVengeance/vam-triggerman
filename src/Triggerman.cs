@@ -107,6 +107,11 @@ namespace TacoVengeance
             ratioToOrgasmFloat.storeType = JSONStorableParam.StoreType.Full;
         }
 
+        public void OnDestroy()
+        {
+            ClearHandlers();
+        }
+
         public void Start()
         {
             if (containingAtom.category == "People")
@@ -395,6 +400,26 @@ namespace TacoVengeance
             {
                 deepVagTouching = false;
             }
+        }
+
+        #endregion
+
+        #region helpers
+
+        void ClearHandlers()
+        {
+            //cover your eyes, lest ye be blinded
+
+            foreach (var d in OnArousalUpdate.GetInvocationList()) OnArousalUpdate -= (Handler) d;
+            foreach (var d in OnKissingStart .GetInvocationList()) OnKissingStart  -= (SimpleHandler) d;
+            foreach (var d in OnKissingStop  .GetInvocationList()) OnKissingStop   -= (SimpleHandler) d;
+            foreach (var d in OnSuckingStart .GetInvocationList()) OnSuckingStart  -= (SimpleHandler) d;
+            foreach (var d in OnSuckingStop  .GetInvocationList()) OnSuckingStop   -= (SimpleHandler) d;
+            foreach (var d in OnOrgasmStart  .GetInvocationList()) OnOrgasmStart   -= (SimpleHandler) d;
+            foreach (var d in OnOrgasmStop   .GetInvocationList()) OnOrgasmStop    -= (SimpleHandler) d;
+            foreach (var d in OnBreastTouch  .GetInvocationList()) OnBreastTouch   -= (SimpleHandler) d;
+            foreach (var d in OnPenetration  .GetInvocationList()) OnPenetration   -= (SimpleHandler) d;
+            foreach (var d in OnPump         .GetInvocationList()) OnPump          -= (SimpleHandler) d;
         }
 
         #endregion
