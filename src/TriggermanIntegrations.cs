@@ -84,9 +84,9 @@ namespace TacoVengeance
                 triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
                     //slow, long movement at first; shorter and faster with arousal
-                    plugin.SetFloatParamValue("Thrust Time (lower = faster)",   Modulate(.80f, .25f, arousal));
-                    plugin.SetFloatParamValue("Position One (higher = deeper)", Modulate(.80f, .25f, arousal));
-                    plugin.SetFloatParamValue("Hip Position One",               Modulate(.80f, .25f, arousal));
+                    plugin.SetFloatParamValue("Thrust Time", Modulate(.80f, .25f, arousal));
+                    plugin.SetFloatParamValue("Penis In",    Modulate(.25f, .00f, arousal));
+                    plugin.SetFloatParamValue("Hip In",      Modulate(.25f, .00f, arousal));
                 };
             });
 
