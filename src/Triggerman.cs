@@ -222,7 +222,7 @@ namespace TacoVengeance
             );
 
             //throttle updates for performance
-            if (CurrentTime - timeLastUpdate > 0.2f)
+            if (CurrentTime - timeLastUpdate > .5f)
             {
                 timeLastUpdate = CurrentTime;
 
