@@ -65,12 +65,12 @@ namespace TacoVengeance
                     //these take precedence over regular moaning, so while they take place, don't do anything here
                     if (sucking || kissing || orgasming) return;
                     
-                    if      (arousal < 0.01f)  plugin.CallAction("setVoiceBreathing");
-                    else if (arousal < 0.10f)  plugin.CallAction("setVoiceIntensity0");
-                    else if (arousal < 0.20f)  plugin.CallAction("setVoiceIntensity1");
-                    else if (arousal < 0.35f)  plugin.CallAction("setVoiceIntensity2");
-                    else if (arousal < 0.65f)  plugin.CallAction("setVoiceIntensity3");
-                    else if (arousal < 0.85f)  plugin.CallAction("setVoiceIntensity4");
+                    if      (arousal < 0.01f) plugin.CallAction("setVoiceBreathing");
+                    else if (arousal < 0.15f) plugin.CallAction("setVoiceIntensity0");
+                    else if (arousal < 0.35f) plugin.CallAction("setVoiceIntensity1");
+                    else if (arousal < 0.65f) plugin.CallAction("setVoiceIntensity2");
+                    else if (arousal < 0.85f) plugin.CallAction("setVoiceIntensity3");
+                    else                      plugin.CallAction("setVoiceIntensity4");
                 };
 
                 triggerman.OnSuckingStart += () => plugin.CallAction("setVoiceBlowjob");
