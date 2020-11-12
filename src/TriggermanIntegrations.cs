@@ -114,13 +114,13 @@ namespace TacoVengeance
 
                 triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
                 {
-                    if      (kissing || sucking) plugin.SetStringParamValue("selected", SoundList("licking", "kiss", "makeout", "suckinglicking", "cunnilingus"));
-                    else if (orgasming)          plugin.SetStringParamValue("selected", SoundList("woman-orgasm-1", "Late-20s-Woman-Exaggerated", "FemOrgasmSex"));
-                    else if (arousal < 0.10f)    plugin.SetStringParamValue("selected", SoundRange("FemPixieW", 1034, 1039));
-                    else if (arousal < 0.25f)    plugin.SetStringParamValue("selected", SounList("FemPixieW1066", "FemPixieW1066", "FemPixieW1071", "FemPixieW1074", "FemPixieW1076"));
-                    else if (arousal < 0.50f)    plugin.SetStringParamValue("selected", SoundRange("FemPixieW", 1080, 1086));
-                    else if (arousal < 0.75f)    plugin.SetStringParamValue("selected", SoundRange("FemPixieW", 1088, 1098));
-                    else                         ConfigureSoundRandomizer(plugin, "level4");
+                    if      (kissing || sucking) plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["kissing_and_sucking"]);
+                    else if (orgasming)          plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["orgasming"]);
+                    else if (arousal < 0.10f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level0"]);
+                    else if (arousal < 0.25f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level1"]);
+                    else if (arousal < 0.50f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level2"]);
+                    else if (arousal < 0.75f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level3"]);
+                    else                         plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level4"]);
                 };
 
                 triggerman.OnPenetration += () => plugin.CallAction("PlayRandomSound");
@@ -164,13 +164,25 @@ namespace TacoVengeance
             return (finalValue - startingValue) * arousalRatio + startingValue;
         }
 
-        string SoundRange(string prefix, int start, int end)
+        //static data structure to avoid doing all this string construction multiple times per second
+        static Dictionary<string, string> SoundRandomizerSoundLists = new Dictionary<string, string>()
         {
-            var numbers = Enumerable.Range(start, end - start + 1).Select(n => prefix + n.ToString()).ToArray()
+            { "kissing_and_sucking", SoundList("licking", "kiss", "makeout", "suckinglicking", "cunnilingus") },
+            { "orgasming",           SoundList("woman-orgasm-1", "Late-20s-Woman-Exaggerated", "FemOrgasmSex") },
+            { "level0",              SoundRange("FemPixieW", 1034, 1039) },
+            { "level1",              SoundList("FemPixieW1066", "FemPixieW1071", "FemPixieW1074", "FemPixieW1076") },
+            { "level2",              SoundRange("FemPixieW", 1080, 1086) },
+            { "level3",              SoundRange("FemPixieW", 1088, 1098) },
+            { "level4",              SoundRange("FemPixieW", 1088, 1098) },
+        };
+
+        static string SoundRange(string prefix, int start, int end)
+        {
+            var numbers = Enumerable.Range(start, end - start + 1).Select(n => prefix + n.ToString()).ToArray();
             return SoundList(numbers);
         }
 
-        string SoundList(params string[] sounds)
+        static string SoundList(params string[] sounds)
         {
             return string.Join("|", sounds);
         }
