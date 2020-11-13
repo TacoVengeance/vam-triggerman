@@ -137,6 +137,9 @@ namespace TacoVengeance
         {
             var plugin = SearchForLocalPluginBySuffix(pluginNameSuffix);
 
+            //FIXME: this should be controlled with a checkbox in this Plugin's UI, and it should be off by default so that things aren't so automagic
+            //though that would mean encapsulating the events so that callbacks can be removed and readded on checkbox events
+
             if (plugin && plugin.enabled)
             {
                 LogMessage("integrating to " + pluginNameSuffix);
