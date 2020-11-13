@@ -139,6 +139,7 @@ namespace TacoVengeance
 
             if (plugin && plugin.enabled)
             {
+                LogMessage("integrating to " + pluginNameSuffix);
                 action(plugin);
             }
         }
@@ -149,7 +150,6 @@ namespace TacoVengeance
             {
                 if (sid.EndsWith(pluginNameSuffix))
                 {
-                    LogMessage("integrating to " + pluginNameSuffix);
                     return containingAtom.GetStorableByID(sid);
                 }
             }

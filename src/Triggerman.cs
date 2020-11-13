@@ -17,7 +17,6 @@ namespace TacoVengeance
         readonly bool logMessages = false;
 
         public delegate void ArousalHandler(float arousalRatio, bool kissing, bool sucking, bool orgasming);
-
         public event ArousalHandler OnArousalUpdate;
 
         public event Action OnKissingStart;
@@ -35,9 +34,11 @@ namespace TacoVengeance
         public event Action OnBreastTouch;
         bool breastsTouching = false;
 
+        //when entering vagina
         public event Action OnPenetration;
         bool penetrating = false;
 
+        //when hitting deep vagina
         public event Action OnPump;
         bool pumping = false;
 
@@ -161,15 +162,7 @@ namespace TacoVengeance
 
         public void Update()
         {
-            if (IsLoading && !wasLoading)
-            {
-                wasLoading = true;
-            }
-            else if (!IsLoading && wasLoading)
-            {
-                wasLoading = false;
-                ResetTouching();
-            }
+            HandleSceneLoadState();
 
             kissing = lipTouching;
             sucking = mouthTouching || throatTouching;
@@ -234,6 +227,19 @@ namespace TacoVengeance
             }
         }
 
+        void HandleSceneLoadState()
+        {
+            if (IsLoading && !wasLoading)
+            {
+                wasLoading = true;
+            }
+            else if (!IsLoading && wasLoading)
+            {
+                wasLoading = false;
+                ResetTouching();
+            }
+        }
+
         void StartOrgasm()
         {
             arousalTime = 0f;
@@ -263,7 +269,7 @@ namespace TacoVengeance
         {
             if (e.evtType == "Entered")
             {
-                if (!kissing && !orgasming)
+                if (!lipTouching && !orgasming)
                 {
                     timeLastForeplay = CurrentTime;
                     lipTouching = true;
@@ -272,8 +278,8 @@ namespace TacoVengeance
             }
             else
             {
+                if (lipTouching) OnKissingStop();
                 lipTouching = false;
-                OnKissingStop();
             }
         }
 
@@ -289,11 +295,8 @@ namespace TacoVengeance
             }
             else
             {
-                if (mouthTouching)
-                {
-                    mouthTouching = false;
-                    OnSuckingStop();
-                }
+                if (mouthTouching) OnSuckingStop();
+                mouthTouching = false;
             }
         }
 
@@ -309,11 +312,8 @@ namespace TacoVengeance
             }
             else
             {
-                if (throatTouching)
-                {
-                    throatTouching = false;
-                    OnSuckingStop();
-                }
+                if (throatTouching) OnSuckingStop();
+                throatTouching = false;
             }
         }
 
@@ -321,7 +321,7 @@ namespace TacoVengeance
         {
             if (e.evtType == "Entered")
             {
-                if (!lBreastTouching && !throatTouching && !mouthTouching && !orgasming)
+                if (!lBreastTouching && !sucking && !kissing && !orgasming)
                 {
                     timeLastForeplay = CurrentTime;
                     lBreastTouching = true;
@@ -338,7 +338,7 @@ namespace TacoVengeance
         {
             if (e.evtType == "Entered")
             {
-                if (!rBreastTouching && !throatTouching && !mouthTouching && !orgasming)
+                if (!rBreastTouching && !sucking && !kissing && !orgasming)
                 {
                     timeLastForeplay = CurrentTime;
                     rBreastTouching = true;
