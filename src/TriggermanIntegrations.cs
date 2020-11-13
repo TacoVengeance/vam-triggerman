@@ -10,8 +10,6 @@ namespace TacoVengeance
     {
         readonly bool logMessages = true;
 
-        delegate void ActionOnPlugin(JSONStorable plugin);
-
         public override void Init()
         {
             var triggerman = SearchForLocalPluginBySuffix("TriggermanPlugin") as TriggermanPlugin;
@@ -75,7 +73,7 @@ namespace TacoVengeance
 
                 triggerman.OnSuckingStart += () => plugin.CallAction("setVoiceBlowjob");
                 triggerman.OnKissingStart += () => plugin.CallAction("setVoiceKissing");
-                triggerman.OnOrgasmStart += ()  => plugin.CallAction("setVoiceOrgasm");
+                triggerman.OnOrgasmStart +=  () => plugin.CallAction("setVoiceOrgasm");
             });
 
             IntegrateTo("SexHelper", plugin => {
@@ -103,10 +101,12 @@ namespace TacoVengeance
                     plugin.SetFloatParamValue("Master speed", Modulate(1f,   1.25f, arousal));
                 };
 
-                triggerman.OnPenetration += () => plugin.CallAction("Trigger transition");
-                triggerman.OnPump +=        () => plugin.CallAction("Trigger transition");
-                triggerman.OnBreastTouch += () => plugin.CallAction("Trigger transition");
-                triggerman.OnOrgasmStart += () => plugin.CallAction("Trigger transition");
+                Action triggerTransition = () => plugin.CallAction("Trigger transition");
+
+                triggerman.OnPenetration += triggerTransition;
+                triggerman.OnPump +=        triggerTransition;
+                triggerman.OnBreastTouch += triggerTransition;
+                triggerman.OnOrgasmStart += triggerTransition;
             });
 
             IntegrateTo("SoundRandomizer", plugin => {
@@ -123,16 +123,18 @@ namespace TacoVengeance
                     else                         plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level4"]);
                 };
 
-                triggerman.OnPenetration += () => plugin.CallAction("PlayRandomSound");
-                triggerman.OnSuckingStart +=() => plugin.CallAction("PlayRandomSound");
-                triggerman.OnPump +=        () => plugin.CallAction("PlayRandomSound");
-                triggerman.OnBreastTouch += () => plugin.CallAction("PlayRandomSound");
-                triggerman.OnOrgasmStart += () => plugin.CallAction("PlayRandomSound");
+                Action playSound = () => plugin.CallAction("PlayRandomSound");
+
+                triggerman.OnPenetration +=  playSound;
+                triggerman.OnSuckingStart += playSound;
+                triggerman.OnPump +=         playSound;
+                triggerman.OnBreastTouch +=  playSound;
+                triggerman.OnOrgasmStart +=  playSound;
             });
         }
 
         //if the containing atom also has an enabled plugin with this suffix, then do stuff with it
-        void IntegrateTo(string pluginNameSuffix, ActionOnPlugin action)
+        void IntegrateTo(string pluginNameSuffix, Action<JSONStorable> action)
         {
             var plugin = SearchForLocalPluginBySuffix(pluginNameSuffix);
 

@@ -16,30 +16,29 @@ namespace TacoVengeance
     {
         readonly bool logMessages = false;
 
-        public delegate void SimpleHandler();
-        public delegate void Handler(float arousalRatio, bool kissing, bool sucking, bool orgasming);
+        public delegate void ArousalHandler(float arousalRatio, bool kissing, bool sucking, bool orgasming);
 
-        public event Handler OnArousalUpdate;
+        public event ArousalHandler OnArousalUpdate;
 
-        public event SimpleHandler OnKissingStart;
-        public event SimpleHandler OnKissingStop;
+        public event Action OnKissingStart;
+        public event Action OnKissingStop;
         bool kissing = false;
 
-        public event SimpleHandler OnSuckingStart;
-        public event SimpleHandler OnSuckingStop;
+        public event Action OnSuckingStart;
+        public event Action OnSuckingStop;
         bool sucking = false;
 
-        public event SimpleHandler OnOrgasmStart;
-        public event SimpleHandler OnOrgasmStop;
+        public event Action OnOrgasmStart;
+        public event Action OnOrgasmStop;
         bool orgasming = false;
 
-        public event SimpleHandler OnBreastTouch;
+        public event Action OnBreastTouch;
         bool breastsTouching = false;
 
-        public event SimpleHandler OnPenetration;
+        public event Action OnPenetration;
         bool penetrating = false;
 
-        public event SimpleHandler OnPump;
+        public event Action OnPump;
         bool pumping = false;
 
         bool foreplaying = false;
@@ -410,16 +409,16 @@ namespace TacoVengeance
         {
             //cover your eyes, lest ye be blinded
 
-            foreach (var d in OnArousalUpdate.GetInvocationList()) OnArousalUpdate -= (Handler) d;
-            foreach (var d in OnKissingStart .GetInvocationList()) OnKissingStart  -= (SimpleHandler) d;
-            foreach (var d in OnKissingStop  .GetInvocationList()) OnKissingStop   -= (SimpleHandler) d;
-            foreach (var d in OnSuckingStart .GetInvocationList()) OnSuckingStart  -= (SimpleHandler) d;
-            foreach (var d in OnSuckingStop  .GetInvocationList()) OnSuckingStop   -= (SimpleHandler) d;
-            foreach (var d in OnOrgasmStart  .GetInvocationList()) OnOrgasmStart   -= (SimpleHandler) d;
-            foreach (var d in OnOrgasmStop   .GetInvocationList()) OnOrgasmStop    -= (SimpleHandler) d;
-            foreach (var d in OnBreastTouch  .GetInvocationList()) OnBreastTouch   -= (SimpleHandler) d;
-            foreach (var d in OnPenetration  .GetInvocationList()) OnPenetration   -= (SimpleHandler) d;
-            foreach (var d in OnPump         .GetInvocationList()) OnPump          -= (SimpleHandler) d;
+            foreach (var d in OnArousalUpdate.GetInvocationList()) OnArousalUpdate -= (ArousalHandler) d;
+            foreach (var d in OnKissingStart .GetInvocationList()) OnKissingStart  -= (Action) d;
+            foreach (var d in OnKissingStop  .GetInvocationList()) OnKissingStop   -= (Action) d;
+            foreach (var d in OnSuckingStart .GetInvocationList()) OnSuckingStart  -= (Action) d;
+            foreach (var d in OnSuckingStop  .GetInvocationList()) OnSuckingStop   -= (Action) d;
+            foreach (var d in OnOrgasmStart  .GetInvocationList()) OnOrgasmStart   -= (Action) d;
+            foreach (var d in OnOrgasmStop   .GetInvocationList()) OnOrgasmStop    -= (Action) d;
+            foreach (var d in OnBreastTouch  .GetInvocationList()) OnBreastTouch   -= (Action) d;
+            foreach (var d in OnPenetration  .GetInvocationList()) OnPenetration   -= (Action) d;
+            foreach (var d in OnPump         .GetInvocationList()) OnPump          -= (Action) d;
         }
 
         #endregion
