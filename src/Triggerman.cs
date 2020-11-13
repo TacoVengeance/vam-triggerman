@@ -90,6 +90,8 @@ namespace TacoVengeance
         Rigidbody throatTrigger;
         bool throatTouching = false;
 
+        Dictionary<TriggerCollide, EventHandler<TriggerEventArgs>> colliderCallbacks = new Dictionary<TriggerCollide, EventHandler<TriggerEventArgs>>();
+
         float CurrentTime => Time.timeSinceLevelLoad;
 
         public override void Init()
@@ -144,6 +146,7 @@ namespace TacoVengeance
             }
 
             collider.OnCollide += callback;
+            colliderCallbacks[collider] = callback;
 
             return rigidbody;
         }
@@ -407,6 +410,13 @@ namespace TacoVengeance
 
         void ClearHandlers()
         {
+            foreach (var entry in colliderCallbacks)
+            {
+                var collider = entry.Key;
+                var callback = entry.Value;
+                collider.OnCollide -= callback;
+            }
+
             //cover your eyes, lest ye be blinded
 
             foreach (var d in OnArousalUpdate.GetInvocationList()) OnArousalUpdate -= (ArousalHandler) d;
