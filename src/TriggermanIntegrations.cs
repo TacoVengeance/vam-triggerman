@@ -130,6 +130,24 @@ namespace TacoVengeance
                 triggerman.OnBreastTouch +=  playSound;
                 triggerman.OnOrgasmStart +=  playSound;
             });
+
+            IntegrateTo("EmoteBot", plugin => {
+                triggerman.OnArousalUpdate += (arousal, kissing, sucking, orgasming) =>
+                {
+                    plugin.SetFloatParamValue("Arousal", arousal);
+                };
+
+                triggerman.OnKissingStart +=  () => plugin.CallAction("KissingStart");
+                triggerman.OnKissingStop +=   () => plugin.CallAction("KissingStop");
+                triggerman.OnSuckingStart +=  () => plugin.CallAction("SuckingStart");
+                triggerman.OnSuckingStop +=   () => plugin.CallAction("SuckingStop");
+                triggerman.OnBreastTouch +=   () => plugin.CallAction("BreastTouch");
+                triggerman.OnPenetration +=   () => plugin.CallAction("Penetration");
+                triggerman.OnPump +=          () => plugin.CallAction("Pump");
+                triggerman.OnOrgasmStart +=   () => plugin.CallAction("OrgasmStart");
+                triggerman.OnOrgasmStop +=    () => plugin.CallAction("OrgasmStop");
+            });
+
         }
 
         //if the containing atom also has an enabled plugin with this suffix, then do stuff with it
