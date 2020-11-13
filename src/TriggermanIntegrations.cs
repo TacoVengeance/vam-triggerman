@@ -117,10 +117,9 @@ namespace TacoVengeance
                     if      (kissing || sucking) plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["kissing_and_sucking"]);
                     else if (orgasming)          plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["orgasming"]);
                     else if (arousal < 0.10f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level0"]);
-                    else if (arousal < 0.25f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level1"]);
-                    else if (arousal < 0.50f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level2"]);
-                    else if (arousal < 0.75f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level3"]);
-                    else                         plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level4"]);
+                    else if (arousal < 0.30f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level1"]);
+                    else if (arousal < 0.60f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level2"]);
+                    else if (arousal < 0.80f)    plugin.SetStringParamValue("selected", SoundRandomizerSoundLists["level3"]);
                 };
 
                 Action playSound = () => plugin.CallAction("PlayRandomSound");
@@ -175,7 +174,6 @@ namespace TacoVengeance
             { "level1",              SoundList("FemPixieW1066", "FemPixieW1071", "FemPixieW1074", "FemPixieW1076") },
             { "level2",              SoundRange("FemPixieW", 1080, 1086) },
             { "level3",              SoundRange("FemPixieW", 1088, 1098) },
-            { "level4",              SoundRange("FemPixieW", 1088, 1098) },
         };
 
         static string SoundRange(string prefix, int start, int end)
