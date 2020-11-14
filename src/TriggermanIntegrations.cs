@@ -9,7 +9,15 @@ namespace TacoVengeance
     public class TriggermanIntegrations : MVRScript
     {
         readonly bool logMessages = true;
+        JSONStorableString statusString;
 
+        public override void Init()
+        {
+            statusString = new JSONStorableString("", "Enabled integrations:\n");
+            CreateTextField(statusString).height = 500f;
+        }
+
+        //NOTE: integrations happen on first load; to redo them, reload the plugin
         public void Start()
         {
             var triggerman = SearchForLocalPluginBySuffix("TriggermanPlugin") as TriggermanPlugin;
@@ -160,7 +168,7 @@ namespace TacoVengeance
 
             if (plugin && plugin.enabled)
             {
-                LogMessage("integrating to " + pluginNameSuffix);
+                RegisterIntegrationTo(pluginNameSuffix);
                 action(plugin);
             }
         }
@@ -176,6 +184,12 @@ namespace TacoVengeance
             }
 
             return null;
+        }
+
+        void RegisterIntegrationTo(string pluginName)
+        {
+            LogMessage("integrating to " + pluginName);
+            statusString.val += $"\n{pluginName}";
         }
 
         #region helpers
