@@ -307,6 +307,7 @@ namespace TacoVengeance
             {
                 if (!mouthTouching && !orgasming)
                 {
+                    timeLastForeplay = CurrentTime;
                     mouthTouching = true;
                     OnSuckingStart();
                 }
@@ -324,6 +325,7 @@ namespace TacoVengeance
             {
                 if (!throatTouching && !orgasming)
                 {
+                    timeLastForeplay = CurrentTime;
                     throatTouching = true;
                     OnSuckingStart();
                 }
@@ -339,7 +341,7 @@ namespace TacoVengeance
         {
             if (e.evtType == "Entered")
             {
-                if (!lBreastTouching && !sucking && !kissing && !orgasming)
+                if (!lBreastTouching && !orgasming)
                 {
                     timeLastForeplay = CurrentTime;
                     lBreastTouching = true;
@@ -356,7 +358,7 @@ namespace TacoVengeance
         {
             if (e.evtType == "Entered")
             {
-                if (!rBreastTouching && !sucking && !kissing && !orgasming)
+                if (!rBreastTouching && !orgasming)
                 {
                     timeLastForeplay = CurrentTime;
                     rBreastTouching = true;
