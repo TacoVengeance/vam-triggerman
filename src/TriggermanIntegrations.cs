@@ -10,7 +10,7 @@ namespace TacoVengeance
     {
         readonly bool logMessages = true;
 
-        public override void Init()
+        public void Start()
         {
             var triggerman = SearchForLocalPluginBySuffix("TriggermanPlugin") as TriggermanPlugin;
             if (triggerman == null)

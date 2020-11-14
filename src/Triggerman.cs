@@ -111,7 +111,22 @@ namespace TacoVengeance
 
         public void OnDestroy()
         {
-            ClearHandlers();
+            DisableColliderEvents();
+            DisablePublicEvents();
+        }
+
+        public void OnDisable()
+        {
+            DisableColliderEvents();
+        }
+
+        public void OnEnable()
+        {
+            //ensure we don't end up registering them multiple times
+            DisableColliderEvents(); 
+
+            ReenableColliderEvents();
+            ResetTouching();
         }
 
         public void Start()
@@ -408,15 +423,8 @@ namespace TacoVengeance
 
         #region helpers
 
-        void ClearHandlers()
+        void DisablePublicEvents()
         {
-            foreach (var entry in colliderCallbacks)
-            {
-                var collider = entry.Key;
-                var callback = entry.Value;
-                collider.OnCollide -= callback;
-            }
-
             //cover your eyes, lest ye be blinded
 
             foreach (var d in OnArousalUpdate.GetInvocationList()) OnArousalUpdate -= (ArousalHandler) d;
@@ -429,6 +437,26 @@ namespace TacoVengeance
             foreach (var d in OnBreastTouch  .GetInvocationList()) OnBreastTouch   -= (Action) d;
             foreach (var d in OnPenetration  .GetInvocationList()) OnPenetration   -= (Action) d;
             foreach (var d in OnPump         .GetInvocationList()) OnPump          -= (Action) d;
+        }
+
+        void DisableColliderEvents()
+        {
+            foreach (var entry in colliderCallbacks)
+            {
+                var collider = entry.Key;
+                var callback = entry.Value;
+                collider.OnCollide -= callback;
+            }
+        }
+
+        void ReenableColliderEvents()
+        {
+            foreach (var entry in colliderCallbacks)
+            {
+                var collider = entry.Key;
+                var callback = entry.Value;
+                collider.OnCollide += callback;
+            }
         }
 
         #endregion
